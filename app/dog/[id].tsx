@@ -1,37 +1,39 @@
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Link } from 'expo-router';
 
-export default function DogPage() {
+const DOGS: any = {
+  '1': { name: 'Luna', breed: 'Labrador', age: '2 anni', size: 'Media', emoji: '🦮', owner: 'Marco', desc: 'Dolce e giocherellona! Cerco amici per correre al parco Sempione.' },
+  '2': { name: 'Brando', breed: 'Golden', age: '3 anni', size: 'Grande', emoji: '🐕‍🦺', owner: 'Giulia', desc: 'Ama correre e giocare con la palla! Cerchiamo compagni di avventure.' },
+};
+
+export default function DogDetail() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
+  const dog = DOGS[id as string] || DOGS['1'];
   return (
-    <View style={styles.container}>
-      <Pressable onPress={() => router.back()} style={styles.backBtn}>
-        <Text style={styles.back}>← Indietro</Text>
-      </Pressable>
-      <Text style={styles.emoji}>🐶</Text>
-      <Text style={styles.title}>Luna</Text>
-      <Text style={styles.breed}>Labrador • 2 anni</Text>
-      <Text style={styles.desc}>Dolce e giocherellona! Cerco amici per correre al parco.</Text>
-      <Link href={`/`} asChild>
-        <Pressable style={styles.btn}>
-          <Text style={styles.btnText}>💬 Chatta con il padrone</Text>
+    <ScrollView style={s.container} contentContainerStyle={{ padding: 20, paddingTop: 60 }}>
+      <Pressable onPress={() => router.back()}><Text style={s.back}>← Torna ai cani</Text></Pressable>
+      <View style={s.card}>
+        <Text style={{ fontSize: 90 }}>{dog.emoji}</Text>
+        <Text style={s.name}>{dog.name}</Text>
+        <Text style={s.breed}>{dog.breed} • {dog.age} • {dog.size}</Text>
+        <Text style={s.owner}>Padrone: {dog.owner}</Text>
+        <Text style={s.desc}>{dog.desc}</Text>
+        <Pressable style={s.btn} onPress={() => router.push(`/chat/${id}`)}>
+          <Text style={s.btnText}>Chatta con {dog.owner} 💬</Text>
         </Pressable>
-      </Link>
-      <Text style={styles.id}>ID: {id}</Text>
-    </View>
+      </View>
+    </ScrollView>
   );
 }
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFF0F5', padding: 20, paddingTop: 60, alignItems: 'center' },
-  backBtn: { alignSelf: 'flex-start' },
-  back: { fontSize: 16, color: '#FF6B9D', fontWeight: '600', marginBottom: 20 },
-  emoji: { fontSize: 80, marginBottom: 10 },
-  title: { fontSize: 28, fontWeight: '800' },
-  breed: { fontSize: 16, color: '#666', marginTop: 4 },
-  desc: { fontSize: 16, textAlign: 'center', marginTop: 16, color: '#444', lineHeight: 22 },
-  btn: { backgroundColor: '#FF6B9D', padding: 14, borderRadius: 12, marginTop: 24, width: '100%', alignItems: 'center' },
-  btnText: { color: 'white', fontWeight: '700', fontSize: 16 },
-  id: { marginTop: 20, color: '#AAA', fontSize: 12 },
+const s = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#FFF0F5' },
+  back: { color: '#FF5A7A', fontWeight: '700', marginBottom: 16 },
+  card: { backgroundColor: 'white', borderRadius: 24, padding: 24, alignItems: 'center' },
+  name: { fontSize: 28, fontWeight: '800', marginTop: 10 },
+  breed: { color: '#999', marginTop: 4 },
+  owner: { marginTop: 8, fontWeight: '600', color: '#FF5A7A' },
+  desc: { marginTop: 16, color: '#666', textAlign: 'center', lineHeight: 22 },
+  btn: { marginTop: 24, backgroundColor: '#FF5A7A', paddingHorizontal: 24, paddingVertical: 14, borderRadius: 24, width: '100%', alignItems: 'center' },
+  btnText: { color: 'white', fontWeight: '800', fontSize: 16 },
 });
