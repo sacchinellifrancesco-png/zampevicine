@@ -9,6 +9,7 @@ import {
 } from 'react';
 import { GeoJson, Map, Marker, Overlay, type Point } from 'pigeon-maps';
 import { StyleSheet, Text, View } from 'react-native';
+import { PressableFeedback } from 'heroui-native';
 
 import {
   DEFAULT_REGION,
@@ -91,7 +92,7 @@ function tileProvider(mapType?: MapType) {
     return (x: number, y: number, z: number) => `https://a.tile.opentopomap.org/${z}/${x}/${y}.png`;
   }
 
-  return undefined;
+  return (x: number, y: number, z: number) => `https://tile.openstreetmap.org/${z}/${x}/${y}.png`;
 }
 
 function closeRing(coordinates: LatLng[]) {
@@ -297,7 +298,7 @@ const MapView = forwardRef<MapViewHandle, MapViewProps>(function MapView(
         provider={tileProvider(mapType)}
         height={mapHeight}
         animate
-        attribution={false}
+        attribution={<span>© OpenStreetMap contributors</span>}
         attributionPrefix={false}
         mouseEvents={scrollEnabled}
         touchEvents={scrollEnabled}
@@ -312,20 +313,40 @@ const MapView = forwardRef<MapViewHandle, MapViewProps>(function MapView(
           styleCallback={(feature: GeoJsonFeature) => feature.properties.svgAttributes}
         />
 
-        {markers.map((marker, index) => (
-          <Marker
-            key={markerKey(marker, index)}
-            anchor={regionToCenter(marker.coordinate)}
-            color={getMarkerColor(marker.color)}
-            onClick={() => {
-              marker.onPress?.(marker);
-              onMarkerPress?.(marker);
-            }}
-          />
-        ))}
+        {markers.map((marker, index) =>
+          marker.content ? (
+            <Overlay
+              key={markerKey(marker, index)}
+              anchor={regionToCenter(marker.coordinate)}
+              offset={marker.contentOffset ?? [39, 80]}
+            >
+              <PressableFeedback
+                accessibilityRole="button"
+                accessibilityLabel={marker.title ?? 'Posizione sulla mappa'}
+                animation={false}
+                onPress={() => {
+                  marker.onPress?.(marker);
+                  onMarkerPress?.(marker);
+                }}
+              >
+                {marker.content}
+              </PressableFeedback>
+            </Overlay>
+          ) : (
+            <Marker
+              key={markerKey(marker, index)}
+              anchor={regionToCenter(marker.coordinate)}
+              color={getMarkerColor(marker.color)}
+              onClick={() => {
+                marker.onPress?.(marker);
+                onMarkerPress?.(marker);
+              }}
+            />
+          ),
+        )}
 
         {markers
-          .filter((marker) => marker.title || marker.description)
+          .filter((marker) => !marker.content && (marker.title || marker.description))
           .map((marker, index) => (
             <Overlay
               key={`label-${markerKey(marker, index)}`}

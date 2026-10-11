@@ -110,7 +110,9 @@ function renderMarker(
         marker.onPress?.(marker);
         onMarkerPress?.(marker);
       }}
-    />
+    >
+      {marker.content}
+    </Marker>
   );
 }
 

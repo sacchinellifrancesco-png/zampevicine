@@ -1,4 +1,5 @@
 import type { StyleProp, ViewStyle } from 'react-native';
+import type { ReactNode } from 'react';
 
 export interface LatLng {
   latitude: number;
@@ -46,6 +47,8 @@ export interface MapMarker {
   color?: MarkerColorValue;
   draggable?: boolean;
   opacity?: number;
+  content?: ReactNode;
+  contentOffset?: [number, number];
   onPress?: (marker: MapMarker) => void;
   onCalloutPress?: (marker: MapMarker) => void;
   onDragStart?: (coordinate: LatLng) => void;

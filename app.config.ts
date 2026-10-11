@@ -10,12 +10,12 @@ export default ({ config }: ConfigContext): ExpoConfig => {
 
   return {
     ...config,
-    name: 'ZampeVicine',
-    slug: 'zampevicine',
+    name: 'LeashLove',
+    slug: 'leashlove',
     version: process.env.BILT_APP_VERSION ?? '1.0.0',
     orientation: 'portrait',
     userInterfaceStyle: 'automatic',
-    scheme: 'zampevicine',
+    scheme: 'leashlove',
     runtimeVersion: {
       policy: 'appVersion',
     },
@@ -41,7 +41,19 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     extra: {
       appStoreAppId: process.env.BILT_APP_STORE_APP_ID,
     },
-    plugins: ['expo-router', 'expo-font', ...nativePlugins],
+    plugins: [
+      'expo-router',
+      'expo-font',
+      ['expo-splash-screen', { backgroundColor: '#FFFBF5' }],
+      [
+        'expo-location',
+        {
+          locationWhenInUsePermission:
+            'LeashLove usa la tua posizione per trovare cani vicino a te e condividere la posizione durante la passeggiata.',
+        },
+      ],
+      ...nativePlugins,
+    ],
     experiments: {
       typedRoutes: true,
       reactCompiler: true,

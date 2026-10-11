@@ -9,6 +9,14 @@ import {
   Inter_700Bold,
   useFonts,
 } from '@expo-google-fonts/inter';
+import {
+  Poppins_400Regular,
+  Poppins_500Medium,
+  Poppins_600SemiBold,
+  Poppins_700Bold,
+} from '@expo-google-fonts/poppins';
+import { useAppLifecycle } from '@/lib/location';
+import { colors, fonts } from '@/lib/theme';
 import Constants, { ExecutionEnvironment } from 'expo-constants';
 import { Platform } from 'react-native';
 import { useEffect } from 'react';
@@ -53,7 +61,12 @@ Uniwind.setTheme('light');
 void SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  useAppLifecycle();
   const [loaded, error] = useFonts({
+    Poppins_400Regular,
+    Poppins_500Medium,
+    Poppins_600SemiBold,
+    Poppins_700Bold,
     Inter_400Regular,
     Inter_500Medium,
     Inter_600SemiBold,
@@ -145,8 +158,20 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <HeroUINativeProvider>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ title: 'Habits', headerShown: false }} />
+        <Stack
+          screenOptions={{
+            contentStyle: { backgroundColor: colors.cream },
+            headerStyle: { backgroundColor: colors.cream },
+            headerTintColor: colors.ink,
+            headerTitleStyle: { fontFamily: fonts.semibold, fontSize: 16 },
+            headerShadowVisible: false,
+            headerBackButtonDisplayMode: 'minimal',
+          }}
+        >
+          <Stack.Screen name="(tabs)" options={{ title: 'Vicino a te', headerShown: false }} />
+          <Stack.Screen name="dog/[id]" options={{ title: 'Un nuovo amico' }} />
+          <Stack.Screen name="chat/[id]" options={{ title: 'Conversazione' }} />
+          <Stack.Screen name="edit-dog" options={{ title: 'Il profilo di Milo' }} />
         </Stack>
         <InstallPrompt />
       </HeroUINativeProvider>
