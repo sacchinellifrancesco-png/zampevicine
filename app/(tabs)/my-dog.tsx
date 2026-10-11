@@ -1,6 +1,8 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { useRouter } from 'expo-router';
 
 export default function MyDog() {
+  const router = useRouter();
   return (
     <View style={s.container}>
       <Text style={s.header}>Il Mio Cane 🐶</Text>
@@ -9,7 +11,9 @@ export default function MyDog() {
         <Text style={s.name}>Rocky</Text>
         <Text style={s.breed}>Border Collie • 1 anno</Text>
         <Text style={s.desc}>Super energico, ama i bambini e le passeggiate lunghe al parco Sempione!</Text>
-        <Pressable style={s.btn}><Text style={s.btnText}>Modifica Profilo ✏️</Text></Pressable>
+        <Pressable style={s.btn} onPress={() => router.push('/edit-dog')}>
+          <Text style={s.btnText}>Modifica Profilo ✏️</Text>
+        </Pressable>
       </View>
     </View>
   );
@@ -21,6 +25,6 @@ const s = StyleSheet.create({
   name: { fontSize: 24, fontWeight: '800', color: '#333', marginTop: 12 },
   breed: { color: '#999', marginTop: 4 },
   desc: { textAlign: 'center', color: '#666', marginTop: 12, lineHeight: 20 },
-  btn: { marginTop: 20, backgroundColor: '#FF5A7A', paddingHorizontal: 20, paddingVertical: 10, borderRadius: 20 },
+  btn: { marginTop: 20, backgroundColor: '#FF5A7A', paddingHorizontal: 20, paddingVertical: 12, borderRadius: 20 },
   btnText: { color: 'white', fontWeight: '700' },
 });
