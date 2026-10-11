@@ -138,3 +138,19 @@ export default function ChatsScreen() {
     </KeyboardAvoidingView>
   );
 }
+import { View, Text, StyleSheet } from 'react-native';
+export default function Page() {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.emoji}>🐾</Text>
+      <Text style={styles.title}>In arrivo!</Text>
+      <Text style={styles.desc}>Stiamo sistemando questa pagina. Torna alla Home!</Text>
+    </View>
+  );
+}
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#FFF0F5', alignItems: 'center', justifyContent: 'center', padding: 20 },
+  emoji: { fontSize: 60 },
+  title: { fontSize: 24, fontWeight: '800', marginTop: 12 },
+  desc: { fontSize: 16, color: '#666', marginTop: 8, textAlign: 'center' },
+});
