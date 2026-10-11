@@ -20,6 +20,7 @@ import { colors, fonts } from '@/lib/theme';
 import { Text } from '@/components/leashlove/Text';
 import { Logo } from '@/components/leashlove/Logo';
 import { DogPin } from '@/components/leashlove/DogPin';
+import { UserPin } from '@/components/leashlove/UserPin';
 import { VisibilityButton } from '@/components/leashlove/VisibilityButton';
 import { ErrorNotice } from '@/components/leashlove/Feedback';
 
@@ -33,7 +34,8 @@ const filters = [
 export default function MapScreen() {
   const insets = useSafeAreaInsets();
   const position = useAppStore((s) => s.position);
-  const myDogPhoto = useAppStore((s) => s.myDog.photo);
+  const myDog = useAppStore((s) => s.myDog);
+  const myDogPhoto = myDog.photo;
   const city = useAppStore((s) => s.city);
   const regionName = useAppStore((s) => s.regionName);
   const demo = useAppStore((s) => s.demoLocation);
@@ -128,35 +130,15 @@ export default function MapScreen() {
       void Haptics.selectionAsync();
     },
   }));
-  markers.push({
-    id: 'me',
-    coordinate: position,
-    title: demo ? 'Posizione demo' : 'La tua posizione',
-    contentOffset: [14, 14],
-    content: (
-      <View
-        style={{
-          width: 28,
-          height: 28,
-          borderRadius: 14,
-          backgroundColor: colors.blueSoft,
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <View
-          style={{
-            width: 15,
-            height: 15,
-            borderRadius: 8,
-            backgroundColor: colors.blue,
-            borderColor: colors.paper,
-            borderWidth: 3,
-          }}
-        />
-      </View>
-    ),
-  });
+  const userVisible = isOnline(myDog, now);
+  if (userVisible || !demo)
+    markers.push({
+      id: 'me',
+      coordinate: userVisible ? myDog : position,
+      title: userVisible ? `${myDog.name} · Sei visibile` : 'La tua posizione',
+      contentOffset: [24, 24],
+      content: <UserPin visible={userVisible} />,
+    });
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.cream, paddingTop: insets.top }}>
@@ -265,7 +247,7 @@ export default function MapScreen() {
           style={{ width: '100%', height: mapHeight }}
           initialRegion={{ ...position, latitudeDelta: 0.025, longitudeDelta: 0.025 }}
           markers={markers}
-          showsUserLocation={!demo}
+          showsUserLocation={false}
           showsMyLocationButton={false}
           showsCompass={false}
           showsScale={false}
@@ -352,7 +334,7 @@ export default function MapScreen() {
           </View>
         )}
       </View>
-      <View className="px-5 pt-4 pb-3">
+      <View className="px-4 pt-4 pb-3">
         <VisibilityButton />
       </View>
       <Dialog isOpen={cityOpen} onOpenChange={setCityOpen}>

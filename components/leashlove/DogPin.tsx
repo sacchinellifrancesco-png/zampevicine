@@ -18,9 +18,9 @@ export function DogPin({
         style={{
           padding: 3,
           borderRadius: 32,
-          backgroundColor: selected ? colors.orange : colors.paper,
+          backgroundColor: colors.orange,
           borderWidth: 1,
-          borderColor: selected ? colors.orange : colors.line,
+          borderColor: colors.orange,
         }}
       >
         <DogPhoto uri={photo} size={selected ? 50 : 42} />
@@ -29,7 +29,7 @@ export function DogPin({
         style={{
           width: 10,
           height: 10,
-          backgroundColor: selected ? colors.orange : colors.paper,
+          backgroundColor: colors.orange,
           transform: [{ rotate: '45deg' }],
           marginTop: -6,
         }}

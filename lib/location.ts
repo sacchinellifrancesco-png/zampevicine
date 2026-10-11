@@ -4,19 +4,25 @@ import { useEffect } from 'react';
 import { useAppStore, hydrateLocal, saveLocal } from '@/lib/store';
 import { isOnline } from '@/lib/dogs';
 
-let locating: Promise<void> | null = null;
-export function refreshLocation(): Promise<void> {
+export type LocationOutcome = 'success' | 'permission-denied' | 'gps-disabled' | 'error';
+let locating: Promise<LocationOutcome> | null = null;
+export function refreshLocation(requestPermission = true): Promise<LocationOutcome> {
   if (locating) return locating;
-  locating = (async () => {
+  locating = (async (): Promise<LocationOutcome> => {
     try {
-      const permission = await Location.requestForegroundPermissionsAsync();
-      if (permission.status !== Location.PermissionStatus.GRANTED) {
+      let permission = await Location.getForegroundPermissionsAsync();
+      if (!permission.granted && requestPermission && permission.canAskAgain) {
+        permission = await Location.requestForegroundPermissionsAsync();
+      }
+      if (!permission.granted) {
         useAppStore
           .getState()
-          .setLocationError(
-            'Posizione non disponibile. Puoi esplorare Roma o Milano in modalità demo.',
-          );
-        return;
+          .setLocationError('Consenti l’accesso alla posizione per essere visibile.');
+        return 'permission-denied';
+      }
+      if (Platform.OS !== 'web' && !(await Location.hasServicesEnabledAsync())) {
+        useAppStore.getState().setLocationError('Attiva la localizzazione per essere visibile.');
+        return 'gps-disabled';
       }
       const result = await Location.getCurrentPositionAsync({
         accuracy: Location.Accuracy.Balanced,
@@ -46,14 +52,15 @@ export function refreshLocation(): Promise<void> {
         region = 'Lombardia';
       }
       useAppStore.getState().setPosition(position, city, region, false);
-      const dog = useAppStore.getState().myDog;
-      if (isOnline(dog)) await saveLocal({ myDog: { ...dog, ...position, city } });
+      if (isOnline(useAppStore.getState().myDog)) {
+        await saveLocal((state) => ({
+          myDog: isOnline(state.myDog) ? { ...state.myDog, ...position, city } : state.myDog,
+        }));
+      }
+      return 'success';
     } catch {
-      useAppStore
-        .getState()
-        .setLocationError(
-          'Non riusciamo a trovare la posizione. Riprova o esplora una città demo.',
-        );
+      useAppStore.getState().setLocationError('Non riusciamo a trovare la posizione. Riprova.');
+      return 'error';
     }
   })().finally(() => {
     locating = null;
@@ -61,29 +68,34 @@ export function refreshLocation(): Promise<void> {
   return locating;
 }
 export function useAppLifecycle() {
+  const ready = useAppStore((state) => state.ready);
+  const visible = useAppStore((state) => isOnline(state.myDog, state.now));
   useEffect(() => {
     void hydrateLocal();
-    void refreshLocation();
     const timer = setInterval(() => useAppStore.getState().tick(), 1000);
-    const locationTimer = setInterval(() => {
-      if (
-        AppState.currentState === 'active' &&
-        isOnline(useAppStore.getState().myDog) &&
-        !useAppStore.getState().demoLocation
-      )
-        void refreshLocation();
-    }, 120000);
     const subscription = AppState.addEventListener('change', (state) => {
-      if (state === 'active') {
-        useAppStore.getState().tick();
-        if (isOnline(useAppStore.getState().myDog) && !useAppStore.getState().demoLocation)
-          void refreshLocation();
-      }
+      if (state === 'active') useAppStore.getState().tick();
     });
     return () => {
       clearInterval(timer);
-      clearInterval(locationTimer);
       subscription.remove();
     };
   }, []);
+  useEffect(() => {
+    if (!ready || !visible) return undefined;
+    const update = () => {
+      if (AppState.currentState === 'active' && isOnline(useAppStore.getState().myDog)) {
+        void refreshLocation(false);
+      }
+    };
+    update();
+    const locationTimer = setInterval(update, 120000);
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (state === 'active') update();
+    });
+    return () => {
+      clearInterval(locationTimer);
+      subscription.remove();
+    };
+  }, [ready, visible]);
 }

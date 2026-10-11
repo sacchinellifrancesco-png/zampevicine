@@ -90,9 +90,13 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ now });
     const dog = get().myDog;
     if (dog.isVisibleNow && (!dog.visibleUntil || new Date(dog.visibleUntil).getTime() <= now)) {
-      void saveLocal({ myDog: { ...dog, isVisibleNow: false, visibleUntil: null } }).catch(
-        () => undefined,
-      );
+      void saveLocal((state) => ({
+        myDog:
+          state.myDog.isVisibleNow &&
+          (!state.myDog.visibleUntil || new Date(state.myDog.visibleUntil).getTime() <= Date.now())
+            ? { ...state.myDog, isVisibleNow: false, visibleUntil: null }
+            : state.myDog,
+      })).catch(() => undefined);
     }
   },
 }));
@@ -113,15 +117,18 @@ export async function hydrateLocal() {
     });
   }
 }
-export function saveLocal(patch: Partial<SavedState>): Promise<void> {
+export function saveLocal(
+  patch: Partial<SavedState> | ((state: AppState) => Partial<SavedState>),
+): Promise<void> {
   const operation = queue
     .catch(() => undefined)
     .then(async () => {
       const current = useAppStore.getState();
+      const resolved = typeof patch === 'function' ? patch(current) : patch;
       const next: SavedState = {
-        myDog: patch.myDog ?? current.myDog,
-        chats: patch.chats ?? current.chats,
-        reports: patch.reports ?? current.reports,
+        myDog: resolved.myDog ?? current.myDog,
+        chats: resolved.chats ?? current.chats,
+        reports: resolved.reports ?? current.reports,
       };
       try {
         await AsyncStorage.setItem(KEY, JSON.stringify(next));
