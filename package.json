@@ -80,6 +80,8 @@
     "typescript": "~6.0.3",
     "workbox-cli": "^7.4.1"
   },
+  "expo-image-picker": "~15.0.7",
+"expo-av": "~14.0.7",
   "engines": {
     "node": ">=20.19.4"
   },
