@@ -17,6 +17,7 @@ import { dogs, ROME, MILAN, isOnline, distanceKm, formatDistance, ageText } from
 import { useAppStore, hydrateLocal } from '@/lib/store';
 import { refreshLocation } from '@/lib/location';
 import { colors, fonts } from '@/lib/theme';
+import { dogPhotoSource } from '@/lib/dogPhotos';
 import { Text } from '@/components/leashlove/Text';
 import { Logo } from '@/components/leashlove/Logo';
 import { DogPin } from '@/components/leashlove/DogPin';
@@ -59,7 +60,11 @@ export default function MapScreen() {
       setSelectedId(requestedDog.id);
     }
   }
-  const visibleDogs = dogs.filter((d) => isOnline(d, now) && distanceKm(position, d) <= radius);
+  const visibleDogs = dogs.filter((d) => {
+    const isMarcheDog = d.id === 'dog_marche_01' || d.id === 'dog_marche_02';
+    const maxDistance = isMarcheDog && radius !== Infinity ? 10 : radius;
+    return isOnline(d, now) && distanceKm(position, d) <= maxDistance;
+  });
   const selectedDog = visibleDogs.find((d) => d.id === selectedId) ?? visibleDogs[0];
 
   useEffect(() => {
@@ -151,7 +156,7 @@ export default function MapScreen() {
           >
             <Image
               resizeMode="cover"
-              source={{ uri: myDogPhoto }}
+              source={dogPhotoSource(myDogPhoto)}
               style={{
                 width: 39,
                 height: 39,
@@ -286,7 +291,7 @@ export default function MapScreen() {
               <View className="flex-row items-center gap-3">
                 <Image
                   resizeMode="cover"
-                  source={{ uri: selectedDog.photo }}
+                  source={dogPhotoSource(selectedDog.photo)}
                   style={{ width: 84, height: 100, borderRadius: 12, resizeMode: 'cover' }}
                 />
                 <View className="flex-1">

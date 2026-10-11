@@ -1,13 +1,20 @@
 import type { LatLng } from '@/components/MapView';
 
 export type Character = 'Giocoso' | 'Tranquillo' | 'Energico' | 'Socievole';
-export type Badge = 'Vaccinato' | 'Socievole' | 'Ama i bambini';
+export type Badge =
+  | 'Vaccinato'
+  | 'Socievole'
+  | 'Ama i bambini'
+  | 'Microchippato'
+  | 'Buono con altri cani';
 export interface Dog extends LatLng {
   id: string;
   name: string;
   breed: string;
   age: number;
   weight: number;
+  size?: 'Piccola' | 'Media' | 'Grande';
+  lastSeen?: string;
   photo: string;
   character: Character;
   ownerName: string;
@@ -238,6 +245,50 @@ export const dogs: Dog[] = [
     bio: 'Una coda felice e tanta voglia di compagnia. Ci vediamo al Parco Sempione?',
     place: 'Parco Sempione',
     walks: 48,
+  },
+  {
+    ...base,
+    id: 'dog_marche_01',
+    name: 'Luna',
+    breed: 'Lagotto Romagnolo',
+    age: 3,
+    weight: 14,
+    size: 'Media',
+    character: 'Giocoso',
+    ownerName: 'Giulia',
+    ownerPhoto: owner('photo-1534528741775-53994a69daeb'),
+    bio: "Ama l'acqua e correre in spiaggia. Viviamo tra Senigallia e Ancona!",
+    photo: 'luna-marche',
+    latitude: 43.6188,
+    longitude: 13.2167,
+    city: 'Senigallia, Marche',
+    place: 'Spiaggia di Senigallia',
+    badges: ['Vaccinato', 'Microchippato', 'Buono con altri cani'],
+    isVisibleNow: true,
+    visibleUntil: new Date(Date.now() + 45 * 60 * 1000).toISOString(),
+    lastSeen: '10 min fa',
+  },
+  {
+    ...base,
+    id: 'dog_marche_02',
+    name: 'Brando',
+    breed: 'Maremmano',
+    age: 5,
+    weight: 38,
+    size: 'Grande',
+    character: 'Tranquillo',
+    ownerName: 'Marco',
+    ownerPhoto: owner('photo-1500648767791-00dcc994a43e'),
+    bio: 'Gigante buono, adora i bambini. Passeggiate sul Conero.',
+    photo: 'brando-marche',
+    latitude: 43.601,
+    longitude: 13.5358,
+    city: 'Ancona, Marche - Parco del Conero',
+    place: 'Parco del Conero',
+    badges: ['Vaccinato', 'Microchippato'],
+    isVisibleNow: true,
+    visibleUntil: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
+    lastSeen: 'ora',
   },
 ];
 export const initialDog: Dog = {

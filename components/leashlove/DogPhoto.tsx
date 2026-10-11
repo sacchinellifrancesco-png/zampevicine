@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Image, View } from 'react-native';
 import { Dog as DogIcon } from 'lucide-react-native';
 import { colors } from '@/lib/theme';
+import { dogPhotoSource } from '@/lib/dogPhotos';
 
 export function DogPhoto({
   uri,
@@ -30,7 +31,7 @@ export function DogPhoto({
       ) : (
         <Image
           resizeMode="cover"
-          source={{ uri }}
+          source={dogPhotoSource(uri)}
           accessibilityLabel="Foto del cane"
           onError={() => setFailed(true)}
           style={{ width: size, height: size, resizeMode: 'cover' }}

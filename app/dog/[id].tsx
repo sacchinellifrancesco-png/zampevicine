@@ -8,6 +8,7 @@ import * as Haptics from 'expo-haptics';
 import { dogs, ageText, isOnline, distanceKm, formatDistance } from '@/lib/dogs';
 import { useAppStore, ensureChat, saveLocal } from '@/lib/store';
 import { colors, fonts } from '@/lib/theme';
+import { dogPhotoSource } from '@/lib/dogPhotos';
 import { Text } from '@/components/leashlove/Text';
 import { DogPhoto } from '@/components/leashlove/DogPhoto';
 import { ErrorNotice, EmptyState } from '@/components/leashlove/Feedback';
@@ -73,7 +74,7 @@ export default function DogProfileScreen() {
         >
           <Image
             resizeMode="cover"
-            source={{ uri: dog.photo }}
+            source={dogPhotoSource(dog.photo)}
             accessibilityLabel={`Foto di ${dog.name}`}
             style={{ width, height: Math.min(width * 0.94, 420), resizeMode: 'cover' }}
           />
@@ -106,7 +107,7 @@ export default function DogProfileScreen() {
           <Text style={{ color: colors.muted }}>
             {dog.breed} · {ageText(dog.age)} · {dog.weight} kg
           </Text>
-          <View className="mt-4 mb-5 flex-row gap-2">
+          <View className="mt-4 mb-5 flex-row flex-wrap gap-2">
             <Chip className="bg-green-soft" style={{ backgroundColor: colors.greenSoft }}>
               <Chip.Label
                 numberOfLines={1}
@@ -115,10 +116,18 @@ export default function DogProfileScreen() {
                 {dog.character}
               </Chip.Label>
             </Chip>
-            <Chip className="bg-green-soft" style={{ backgroundColor: colors.greenSoft }}>
+            <Chip
+              className="bg-green-soft"
+              style={{ backgroundColor: colors.greenSoft, maxWidth: '100%' }}
+            >
               <Chip.Label
                 numberOfLines={1}
-                style={{ fontFamily: fonts.medium, color: colors.green, fontSize: 12 }}
+                style={{
+                  fontFamily: fonts.medium,
+                  color: colors.green,
+                  fontSize: 12,
+                  flexShrink: 1,
+                }}
               >
                 {dog.city}
               </Chip.Label>
