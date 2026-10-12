@@ -19,6 +19,8 @@
     "expo-av": "~15.0.2",
     "expo-font": "~12.0.10",
     "expo-splash-screen": "~0.29.24",
+    "@expo/metro-config": "~0.19.12",
+    "metro": "~0.81.0",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-native": "0.76.9",
@@ -32,7 +34,7 @@
     "@types/react": "~18.3.12"
   },
   "engines": {
-    "node": "24.x"
+    "node": "20.x"
   },
   "private": true
 }
