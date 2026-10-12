@@ -1,177 +1,117 @@
-import { useState, useRef } from 'react';
-import { View, Text, TextInput, Pressable, ScrollView, StyleSheet, Image, Platform } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { View, Text, TextInput, Pressable, ScrollView, StyleSheet, Image, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Audio } from 'expo-av';
 
-type Msg = { id: string; text?: string; image?: string; audio?: string; duration?: number; fromMe: boolean; time: string; };
+type Msg = { 
+  id: string; 
+  text?: string; 
+  image?: string; 
+  audio?: string; 
+  duration?: number; 
+  fromMe: boolean; 
+  time: string; 
+};
 
-export default function ChatDetail() {
-  const { id } = useLocalSearchParams();
+export default function ChatScreen() {
+  const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const scrollRef = useRef<ScrollView>(null);
-  const mediaRecorderRef = useRef<any>(null);
-  const audioPlayRef = useRef<any>(null);
 
   const [messages, setMessages] = useState<Msg[]>([
-    { id:'1', text:'Ciao! Andiamo al parco oggi con i cani? 🐶', fromMe:false, time:'10:24' },
-    { id:'2', text:'Si! Alle 18 a Villa Borghese?', fromMe:true, time:'10:25' },
+    { id: '1', text: 'Ciao! Come sta il tuo cucciolo?', fromMe: false, time: '10:30' },
+    { id: '2', text: 'Bene! Ci vediamo al parco alle 17?', fromMe: true, time: '10:31' },
   ]);
   const [text, setText] = useState('');
-  const [isRecording, setIsRecording] = useState(false);
-  const [playingId, setPlayingId] = useState<string | null>(null);
 
-  const pushMessage = (m: Msg) => {
-    setMessages(prev=>[...prev, m]);
-    setTimeout(()=>scrollRef.current?.scrollToEnd({animated:true}), 100);
-  };
-
-  // 📷 FOTO - versione WEB che non rompe il build
-  const sendPhoto = () => {
-    if(Platform.OS!=='web') return;
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.onchange = () => {
-      const file = (input.files as any)?.[0];
-      if(!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        pushMessage({
-          id: Date.now().toString(),
-          image: reader.result as string,
-          fromMe: true,
-          time: new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})
-        });
-      };
-      reader.readAsDataURL(file);
-    };
-    input.click();
-  };
-
-  // 🎙️ VOCALE - versione WEB
-  const startRecording = async () => {
-    if(Platform.OS!=='web') return;
-    try {
-      const stream = await (navigator.mediaDevices as any).getUserMedia({ audio: true });
-      const mr = new (window as any).MediaRecorder(stream);
-      const chunks: Blob[] = [];
-      mr.ondataavailable = (e:any) => { if(e.data.size>0) chunks.push(e.data); };
-      mr.onstop = () => {
-        const blob = new Blob(chunks, { type: 'audio/webm' });
-        const url = URL.createObjectURL(blob);
-        pushMessage({
-          id: Date.now().toString(),
-          audio: url,
-          duration: Math.round(blob.size/1000),
-          fromMe: true,
-          time: new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})
-        });
-        stream.getTracks().forEach((t:any)=>t.stop());
-      };
-      mediaRecorderRef.current = mr;
-      mr.start();
-      setIsRecording(true);
-    } catch (e) {
-      alert('Serve permesso microfono');
-    }
-  };
-
-  const stopRecording = () => {
-    if(mediaRecorderRef.current){
-      mediaRecorderRef.current.stop();
-      setIsRecording(false);
-    }
-  };
-
-  const sendText = () => {
-    if(!text.trim()) return;
-    pushMessage({
+  const sendMessage = () => {
+    if (!text.trim()) return;
+    const newMsg: Msg = {
       id: Date.now().toString(),
       text: text.trim(),
       fromMe: true,
-      time: new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})
-    });
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    };
+    setMessages(prev => [...prev, newMsg]);
     setText('');
+    setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 100);
   };
 
-  const playAudio = (msg: Msg) => {
-    if(!msg.audio || Platform.OS!=='web') return;
-    if(playingId===msg.id){
-      if(audioPlayRef.current){ audioPlayRef.current.pause(); }
-      setPlayingId(null);
-      return;
-    }
-    if(audioPlayRef.current){ audioPlayRef.current.pause(); }
-    const a = new (window as any).Audio(msg.audio);
-    audioPlayRef.current = a;
-    setPlayingId(msg.id);
-    a.play();
-    a.onended = () => setPlayingId(null);
+  const pickImage = async () => {
+    Alert.alert(
+      "Foto disabilitata su web", 
+      "Per ora su leashlove.app le foto in chat sono disabilitate per far passare il build. Le riattiviamo dopo in app nativa."
+    );
   };
 
   return (
-    <View style={s.container}>
-      <View style={s.header}>
-        <Pressable onPress={()=>router.back()}><Text style={s.back}>← Indietro</Text></Pressable>
-        <Text style={s.headerName}>Moka & Marco 🐶</Text>
-        <Text style={s.headerSub}>ID chat: {id} • 200m da te</Text>
+    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      {/* HEADER */}
+      <View style={styles.header}>
+        <Pressable onPress={() => router.back()} style={styles.backBtn}>
+          <Text style={styles.backText}>← Indietro</Text>
+        </Pressable>
+        <Text style={styles.headerTitle}>Chat {id}</Text>
+        <View style={{ width: 70 }} />
       </View>
 
-      <ScrollView ref={scrollRef} style={s.messages} contentContainerStyle={{padding:16, paddingBottom:20}} onContentSizeChange={()=>scrollRef.current?.scrollToEnd({animated:false})}>
-        {messages.map(m=>(
-          <View key={m.id} style={[s.bubble, m.fromMe? s.bubbleMe : s.bubbleOther]}>
-            {m.text && <Text style={[s.bubbleText, m.fromMe && s.bubbleTextMe]}>{m.text}</Text>}
-            {m.image && <Image source={{uri:m.image}} style={s.bubbleImage} />}
-            {m.audio && (
-              <Pressable style={s.audioRow} onPress={()=>playAudio(m)}>
-                <View style={[s.playBtn, playingId===m.id && s.playBtnActive]}><Text style={s.playIcon}>{playingId===m.id?'⏸':'▶️'}</Text></View>
-                <View style={s.wave}><View style={s.waveBar}/><View style={s.waveBar}/><View style={[s.waveBar,{height:14}]}/><View style={s.waveBar}/><View style={s.waveBar}/></View>
-                <Text style={s.audioTime}>{m.duration || 3}"</Text>
-              </Pressable>
-            )}
-            <Text style={[s.time, m.fromMe && {color:'#ffffffAA'}]}>{m.time}</Text>
+      {/* MESSAGES */}
+      <ScrollView 
+        ref={scrollRef} 
+        style={styles.messages} 
+        contentContainerStyle={styles.messagesContent}
+        onContentSizeChange={() => scrollRef.current?.scrollToEnd({ animated: false })}
+      >
+        {messages.map((m) => (
+          <View key={m.id} style={[styles.bubble, m.fromMe ? styles.bubbleMe : styles.bubbleOther]}>
+            {m.image && <Image source={{ uri: m.image }} style={styles.bubbleImage} />}
+            {m.text && <Text style={[styles.bubbleText, m.fromMe ? styles.textMe : styles.textOther]}>{m.text}</Text>}
+            <Text style={styles.time}>{m.time}</Text>
           </View>
         ))}
-        {isRecording && <View style={s.recIndicator}><Text style={s.recText}>● Registrazione... clicca ⏹️ per inviare</Text></View>}
       </ScrollView>
 
-      <View style={s.inputBar}>
-        <Pressable style={s.attachBtn} onPress={sendPhoto}><Text style={s.attachIcon}>📷</Text></Pressable>
-        <TextInput style={s.input} placeholder="Scrivi un messaggio..." value={text} onChangeText={setText} multiline />
-        {text.trim()? (
-          <Pressable style={s.sendBtn} onPress={sendText}><Text style={s.sendText}>➤</Text></Pressable>
-        ) : (
-          <Pressable style={[s.micBtn, isRecording && s.micBtnActive]} onPress={isRecording? stopRecording : startRecording}>
-            <Text style={s.micIcon}>{isRecording?'⏹️':'🎙️'}</Text>
-          </Pressable>
-        )}
+      {/* INPUT */}
+      <View style={styles.inputBar}>
+        <Pressable onPress={pickImage} style={styles.attachBtn}>
+          <Text style={styles.attachText}>📷</Text>
+        </Pressable>
+        <TextInput
+          style={styles.input}
+          placeholder="Scrivi un messaggio..."
+          value={text}
+          onChangeText={setText}
+          onSubmitEditing={sendMessage}
+          returnKeyType="send"
+        />
+        <Pressable onPress={sendMessage} style={styles.sendBtn}>
+          <Text style={styles.sendText}>Invia</Text>
+        </Pressable>
       </View>
-      <Text style={s.hint}>📷 foto dalla libreria • 🎙️ clicca per registrare, riclicca per inviare</Text>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
-const s = StyleSheet.create({
-  container:{flex:1, backgroundColor:'#FFFBF7'},
-  header:{paddingTop:50, paddingBottom:12, paddingHorizontal:16, backgroundColor:'white', borderBottomWidth:1, borderColor:'#FFE5D6'},
-  back:{color:'#FF6B2B', fontWeight:'700', fontSize:12, marginBottom:6},
-  headerName:{fontWeight:'900', fontSize:16}, headerSub:{fontSize:11, color:'#777'},
-  messages:{flex:1},
-  bubble:{maxWidth:'78%', borderRadius:18, padding:10, marginBottom:10},
-  bubbleMe:{backgroundColor:'#FF6B2B', alignSelf:'flex-end', borderBottomRightRadius:4},
-  bubbleOther:{backgroundColor:'white', alignSelf:'flex-start', borderBottomLeftRadius:4, borderWidth:1, borderColor:'#FFE5D6'},
-  bubbleText:{fontSize:14, color:'#111'}, bubbleTextMe:{color:'white'},
-  bubbleImage:{width:180, height:180, borderRadius:12, marginTop:4},
-  audioRow:{flexDirection:'row', alignItems:'center', gap:8, minWidth:140},
-  playBtn:{width:32, height:32, borderRadius:16, backgroundColor:'white', alignItems:'center', justifyContent:'center'}, playBtnActive:{backgroundColor:'#1F3D2B'},
-  playIcon:{fontSize:12}, wave:{flexDirection:'row', gap:3, alignItems:'center'}, waveBar:{width:3, height:8, backgroundColor:'white', borderRadius:2},
-  audioTime:{color:'white', fontSize:11, fontWeight:'700'},
-  time:{fontSize:9, color:'#999', marginTop:4, alignSelf:'flex-end'},
-  recIndicator:{backgroundColor:'#FFE5D6', padding:8, borderRadius:10, marginBottom:8, alignSelf:'center'},
-  recText:{fontSize:11, fontWeight:'700', color:'#FF6B2B'},
-  inputBar:{flexDirection:'row', alignItems:'flex-end', padding:10, backgroundColor:'white', borderTopWidth:1, borderColor:'#FFE5D6', gap:8},
-  attachBtn:{width:40, height:40, borderRadius:20, backgroundColor:'#FFF0E0', alignItems:'center', justifyContent:'center'}, attachIcon:{fontSize:18},
-  input:{flex:1, backgroundColor:'#F5F5F5', borderRadius:20, paddingHorizontal:14, paddingVertical:10, fontSize:14, maxHeight:100},
-  sendBtn:{width:40, height:40, borderRadius:20, backgroundColor:'#FF6B2B', alignItems:'center', justifyContent:'center'}, sendText:{color:'white', fontWeight:'900', fontSize:16},
-  micBtn:{width:40, height:40, borderRadius:20, backgroundColor:'#1F3D2B', alignItems:'center', justifyContent:'center'}, micBtnActive:{backgroundColor:'#C62828'}, micIcon:{fontSize:16},
-  hint:{fontSize:9, color:'#AAA', textAlign:'center', paddingBottom:10, backgroundColor:'white', paddingTop:4}
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#fff' },
+  header: { height: 60, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, borderBottomWidth: 1, borderColor: '#eee', paddingTop: Platform.OS === 'ios' ? 20 : 0 },
+  backBtn: { padding: 4 },
+  backText: { color: '#ff6b35', fontWeight: '600' },
+  headerTitle: { fontWeight: '700', fontSize: 16 },
+  messages: { flex: 1, backgroundColor: '#f9f5f2' },
+  messagesContent: { padding: 16, gap: 10 },
+  bubble: { maxWidth: '75%', padding: 12, borderRadius: 18, },
+  bubbleMe: { alignSelf: 'flex-end', backgroundColor: '#ff6b35', borderBottomRightRadius: 4 },
+  bubbleOther: { alignSelf: 'flex-start', backgroundColor: '#fff', borderBottomLeftRadius: 4, borderWidth: 1, borderColor: '#eee' },
+  bubbleText: { fontSize: 15 },
+  textMe: { color: '#fff' },
+  textOther: { color: '#111' },
+  bubbleImage: { width: 180, height: 180, borderRadius: 12, marginBottom: 6 },
+  time: { fontSize: 10, opacity: 0.5, marginTop: 4, alignSelf: 'flex-end' },
+  inputBar: { flexDirection: 'row', alignItems: 'center', padding: 12, borderTopWidth: 1, borderColor: '#eee', gap: 8 },
+  attachBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#f2f2f2', alignItems: 'center', justifyContent: 'center' },
+  attachText: { fontSize: 20 },
+  input: { flex: 1, height: 44, backgroundColor: '#f2f2f2', borderRadius: 22, paddingHorizontal: 16 },
+  sendBtn: { backgroundColor: '#111', paddingHorizontal: 18, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
+  sendText: { color: '#fff', fontWeight: '700' },
 });
