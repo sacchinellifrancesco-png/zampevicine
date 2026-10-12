@@ -1,5 +1,5 @@
 {
-  "name": "bilt-starter",
+  "name": "leashlove",
   "version": "1.0.0",
   "main": "expo-router/entry",
   "scripts": {
@@ -30,7 +30,7 @@
     "@types/react": "~18.3.12"
   },
   "engines": {
-    "node": "20.x"
+    "node": "24.x"
   },
   "private": true
 }
