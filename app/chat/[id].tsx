@@ -40,13 +40,12 @@ export default function ChatScreen() {
   const pickImage = async () => {
     Alert.alert(
       "Foto disabilitata su web", 
-      "Per ora su leashlove.app le foto in chat sono disabilitate per far passare il build. Le riattiviamo dopo in app nativa."
+      "Per ora su leashlove.app le foto in chat sono disabilitate per far passare il build."
     );
   };
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      {/* HEADER */}
       <View style={styles.header}>
         <Pressable onPress={() => router.back()} style={styles.backBtn}>
           <Text style={styles.backText}>← Indietro</Text>
@@ -55,7 +54,6 @@ export default function ChatScreen() {
         <View style={{ width: 70 }} />
       </View>
 
-      {/* MESSAGES */}
       <ScrollView 
         ref={scrollRef} 
         style={styles.messages} 
@@ -71,7 +69,6 @@ export default function ChatScreen() {
         ))}
       </ScrollView>
 
-      {/* INPUT */}
       <View style={styles.inputBar}>
         <Pressable onPress={pickImage} style={styles.attachBtn}>
           <Text style={styles.attachText}>📷</Text>
