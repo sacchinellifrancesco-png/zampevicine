@@ -34,7 +34,7 @@ export default function DogProfile() {
         </Pressable>
       </View>
 
-      <Link href="/" asChild>
+      <Link href="/map" asChild>
         <Pressable style={{ marginTop: 32, backgroundColor: Warm.primary, padding: 16, borderRadius: 16, alignItems: "center" }}>
           <Text style={{ color: "white", fontWeight: "700" }}>Salva e inizia</Text>
         </Pressable>
