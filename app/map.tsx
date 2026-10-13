@@ -1,34 +1,35 @@
 import { View, Text, Pressable } from "react-native";
 import { Link } from "expo-router";
-import { Warm } from "../constants/Colors";
 
 export default function Map() {
   return (
-    <View style={{ flex: 1, backgroundColor: Warm.bg, padding: 24 }}>
-      <Text style={{ fontSize: 26, fontWeight: "800", color: Warm.text }}>Mappa - Privacy 250m</Text>
+    <View style={{ flex: 1, backgroundColor: "#FEF9EF", padding: 24, paddingTop: 50 }}>
+      <Text style={{ fontSize: 26, fontWeight: "800" }}>Mappa - LeashLove</Text>
       
-      <View style={{ marginTop: 16, backgroundColor: Warm.yellow, padding: 14, borderRadius: 12 }}>
-        <Text style={{ fontWeight: "700", color: Warm.text, textAlign: "center" }}>🏠 ZONA PRIVACY</Text>
-        <Text style={{ fontSize: 12, marginTop: 4, textAlign: "center", color: Warm.text }}>A meno di 250m da casa = tracking SPENTO</Text>
+      <View style={{ marginTop: 16, backgroundColor: "#FFE082", padding: 14, borderRadius: 12 }}>
+        <Text style={{ fontWeight: "700", textAlign: "center" }}>🏠 ZONA PRIVACY 250m</Text>
+        <Text style={{ fontSize: 12, marginTop: 4, textAlign: "center" }}>A casa sei nascosto. A 250m diventi visibile</Text>
       </View>
 
-      <View style={{ marginTop: 16, backgroundColor: "white", padding: 16, borderRadius: 12 }}>
-        <Text style={{ fontWeight: "700", color: Warm.text }}>Come funziona:</Text>
-        <Text style={{ marginTop: 8, color: Warm.textSoft, fontSize: 13 }}>• In casa = nascosto</Text>
-        <Text style={{ color: Warm.textSoft, fontSize: 13 }}>• A 250m da casa = diventi visibile</Text>
-        <Text style={{ color: Warm.textSoft, fontSize: 13 }}>• Torni a 250m da casa = torni nascosto</Text>
-      </View>
+      <Text style={{ marginTop: 20, fontWeight: "700" }}>Cani vicini a te:</Text>
 
-      <View style={{ marginTop: 16, backgroundColor: "white", padding: 16, borderRadius: 14 }}>
-        <Text style={{ fontWeight: "700" }}>Cani vicini (esempio)</Text>
-        <Text style={{ marginTop: 6, color: Warm.textSoft }}>Luna • 120m • VERDE - Amichevole</Text>
-      </View>
-
-      <Link href="/dog-profile" asChild>
-        <Pressable style={{ marginTop: 20, alignItems: "center" }}>
-          <Text style={{ color: Warm.textSoft }}>← Profilo cane</Text>
+      <Link href="/chat" asChild>
+        <Pressable style={{ marginTop: 12, backgroundColor: "white", padding: 16, borderRadius: 14, borderLeftWidth: 6, borderLeftColor: "#4CAF50" }}>
+          <Text style={{ fontWeight: "700" }}>Luna • 120m</Text>
+          <Text style={{ fontSize: 12, color: "green", marginTop: 2 }}>● VERDE - Amichevole - Tocca per chattare</Text>
         </Pressable>
       </Link>
+
+      <Link href="/chat" asChild>
+        <Pressable style={{ marginTop: 10, backgroundColor: "white", padding: 16, borderRadius: 14, borderLeftWidth: 6, borderLeftColor: "#FFC107" }}>
+          <Text style={{ fontWeight: "700" }}>Rocky • 180m</Text>
+          <Text style={{ fontSize: 12, color: "#9E7700", marginTop: 2 }}>● GIALLO - Attenzione - Tocca per chattare</Text>
+        </Pressable>
+      </Link>
+
+      <View style={{ marginTop: 20, backgroundColor: "white", padding: 14, borderRadius: 12 }}>
+        <Text style={{ fontSize: 12, color: "#888" }}>Regola privacy che volevi tu: il tracking parte a 250m da casa e si spegne a 250m prima di casa. Nessuno vede dove abiti.</Text>
+      </View>
     </View>
   );
 }
