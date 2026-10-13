@@ -1,1 +1,22 @@
-
+export const PARKS_ROMA = [
+  { id: 1, name: "Villa Borghese", lat: 41.91, lon: 12.49, cani: 12 },
+  { id: 2, name: "Villa Pamphili", lat: 41.88, lon: 12.43, cani: 18 },
+  { id: 3, name: "Villa Ada", lat: 41.93, lon: 12.50, cani: 9 },
+  { id: 4, name: "Acquedotti", lat: 41.85, lon: 12.56, cani: 7 },
+  { id: 5, name: "Caffarella", lat: 41.86, lon: 12.52, cani: 15 },
+  { id: 6, name: "Villa Torlonia", lat: 41.91, lon: 12.51, cani: 5 },
+  { id: 7, name: "Pineto", lat: 41.92, lon: 12.43, cani: 11 },
+  { id: 8, name: "Gordiani", lat: 41.89, lon: 12.55, cani: 6 },
+  { id: 9, name: "Aguzzano", lat: 41.93, lon: 12.58, cani: 8 },
+  { id: 10, name: "Monte Mario", lat: 41.93, lon: 12.45, cani: 10 },
+  { id: 11, name: "Colle Oppio", lat: 41.89, lon: 12.49, cani: 4 },
+  { id: 12, name: "Centocelle", lat: 41.86, lon: 12.56, cani: 13 },
+  { id: 13, name: "Villa Sciarra", lat: 41.88, lon: 12.46, cani: 6 },
+  { id: 14, name: "Savello", lat: 41.88, lon: 12.48, cani: 3 },
+  { id: 15, name: "Celimontana", lat: 41.88, lon: 12.49, cani: 7 },
+  { id: 16, name: "Nemorense", lat: 41.92, lon: 12.49, cani: 9 },
+  { id: 17, name: "Balestra", lat: 41.92, lon: 12.47, cani: 5 },
+  { id: 18, name: "Veio", lat: 42.05, lon: 12.40, cani: 20 },
+  { id: 19, name: "Villa Lais", lat: 41.87, lon: 12.52, cani: 8 },
+  { id: 20, name: "Tevere Nord", lat: 41.96, lon: 12.48, cani: 14 },
+];
