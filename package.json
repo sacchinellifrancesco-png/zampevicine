@@ -10,6 +10,7 @@
     "export:web": "expo export --platform web"
   },
   "dependencies": {
+    "expo-status-bar": "~1.12.1",
     "@babel/core": "^7.20.0",
     "@supabase/supabase-js": "^2.45.0",
     "babel-preset-expo": "~11.0.14",
