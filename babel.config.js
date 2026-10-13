@@ -1,6 +1,36 @@
-module.exports = function (api) {
-  api.cache(true);
-  return {
-    presets: ['babel-preset-expo'],
-  };
-};
+{
+  "name": "zampevicine",
+  "version": "1.0.0",
+  "main": "expo-router/entry",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "export:web": "expo export --platform web"
+  },
+  "dependencies": {
+    "babel-preset-expo": "~11.0.14",
+    "@babel/core": "^7.20.0",
+    "@supabase/supabase-js": "^2.45.0",
+    "expo": "~51.0.28",
+    "expo-constants": "~16.0.2",
+    "expo-image-picker": "~15.0.7",
+    "expo-linking": "~6.3.1",
+    "expo-location": "~17.0.1",
+    "expo-router": "~3.5.23",
+    "expo-secure-store": "~13.0.2",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-native": "0.74.5",
+    "react-native-maps": "1.14.0",
+    "react-native-safe-area-context": "4.10.5",
+    "react-native-screens": "3.31.1",
+    "react-native-web": "~0.19.10",
+    "zustand": "4.5.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  },
+  "private": true
+}
