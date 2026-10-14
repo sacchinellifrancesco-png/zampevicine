@@ -1,63 +1,30 @@
-import { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, ScrollView } from 'react-native';
-import { useRouter } from 'expo-router';
-import { createClient } from '@supabase/supabase-js';
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 
-const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY!;
-const supabase = createClient(supabaseUrl, supabaseKey);
-
-export default function AuthPage() {
-  const [isLogin, setIsLogin] = useState(true);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const router = useRouter();
-
-  const handleAuth = async () => {
-    if(!email || !password) return Alert.alert("Compila email e password");
-    
-    try {
-      if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-      } else {
-        const { error } = await supabase.auth.signUp({ email, password, options: { data: { full_name: name } } });
-        if (error) {
-          // SE è già registrato, fa il login automatico
-          if (error.message.toLowerCase().includes("already registered") || error.message.toLowerCase().includes("already exists")) {
-            const { error: loginError } = await supabase.auth.signInWithPassword({ email, password });
-            if (loginError) throw loginError;
-          } else {
-            throw error;
-          }
-        }
-      }
-      router.replace("/(tabs)");
-    } catch (e: any) {
-      Alert.alert("Errore", e.message);
-    }
-  };
-
+export default function VicinoPage() {
   return (
-    <ScrollView style={{flex:1, backgroundColor:'#FFF8F5'}} contentContainerStyle={{padding:25, paddingTop:80}}>
-      <Text style={{fontSize:32, fontWeight:'900', color:'#FF6B4A'}}>LeashLove 🐾</Text>
-      <Text style={{fontSize:24, fontWeight:'700', marginTop:10}}>{isLogin ? "Bentornato! ❤️" : "Crea account ✨"}</Text>
-      <Text style={{color:'#666', marginTop:5}}>{isLogin ? "Accedi per rivedere Hope" : "Unisciti alla community di Marcianise"}</Text>
+    <ScrollView style={{flex:1, backgroundColor:'#FFF8F5', padding:20}}>
+      <Text style={{fontSize:28, fontWeight:'900', marginTop:40}}>Vicino a te 📍</Text>
+      <Text style={{color:'#666', marginTop:5}}>2 amici a meno di 2km da Marcianise</Text>
 
-      {!isLogin && (
-        <TextInput placeholder="Il tuo nome" value={name} onChangeText={setName} style={{backgroundColor:'white', padding:16, borderRadius:12, marginTop:25, borderWidth:1, borderColor:'#FFE0D6'}} />
-      )}
-      <TextInput placeholder="Email" autoCapitalize='none' value={email} onChangeText={setEmail} style={{backgroundColor:'white', padding:16, borderRadius:12, marginTop:15, borderWidth:1, borderColor:'#FFE0D6'}} />
-      <TextInput placeholder="Password" secureTextEntry value={password} onChangeText={setPassword} style={{backgroundColor:'white', padding:16, borderRadius:12, marginTop:15, borderWidth:1, borderColor:'#FFE0D6'}} />
+      <View style={{marginTop:20, backgroundColor:'white', borderRadius:20, padding:15, flexDirection:'row', shadowColor:'#000', shadowOpacity:0.05, shadowRadius:10}}>
+        <View style={{width:80, height:80, backgroundColor:'#FFF0EB', borderRadius:20, justifyContent:'center', alignItems:'center'}}><Text style={{fontSize:40}}>🐶</Text></View>
+        <View style={{marginLeft:15, flex:1}}>
+          <View style={{flexDirection:'row', justifyContent:'space-between'}}><Text style={{fontSize:18, fontWeight:'800'}}>Hope</Text><Text style={{backgroundColor:'#E8FFF0', color:'#1FA971', paddingHorizontal:8, paddingVertical:2, borderRadius:10, fontSize:12, fontWeight:'700'}}>0.5 km</Text></View>
+          <Text style={{color:'#666', marginTop:2}}>Metice • 2 anni • Femmina</Text>
+          <Text style={{marginTop:6}}>🎾 Dolce, ama giocare</Text>
+          <TouchableOpacity style={{marginTop:10, backgroundColor:'#FF6B4A', padding:10, borderRadius:10, alignItems:'center'}}><Text style={{color:'white', fontWeight:'700'}}>Chatta con il padrone</Text></TouchableOpacity>
+        </View>
+      </View>
 
-      <TouchableOpacity onPress={handleAuth} style={{backgroundColor:'#FF6B4A', padding:18, borderRadius:12, marginTop:25, alignItems:'center'}}>
-        <Text style={{color:'white', fontWeight:'800', fontSize:16}}>{isLogin ? "Accedi" : "Iscriviti"}</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={()=> setIsLogin(!isLogin)} style={{marginTop:20, alignItems:'center'}}>
-        <Text style={{color:'#FF6B4A', fontWeight:'600'}}>{isLogin ? "Non hai account? Iscriviti" : "Hai già account? Accedi"}</Text>
-      </TouchableOpacity>
+      <View style={{marginTop:15, backgroundColor:'white', borderRadius:20, padding:15, flexDirection:'row'}}>
+        <View style={{width:80, height:80, backgroundColor:'#FFF0EB', borderRadius:20, justifyContent:'center', alignItems:'center'}}><Text style={{fontSize:40}}>🦮</Text></View>
+        <View style={{marginLeft:15, flex:1}}>
+          <View style={{flexDirection:'row', justifyContent:'space-between'}}><Text style={{fontSize:18, fontWeight:'800'}}>Luna</Text><Text style={{backgroundColor:'#E8FFF0', color:'#1FA971', paddingHorizontal:8, paddingVertical:2, borderRadius:10, fontSize:12, fontWeight:'700'}}>1.2 km</Text></View>
+          <Text style={{color:'#666', marginTop:2}}>Labrador • 3 anni</Text>
+          <Text style={{marginTop:6}}>💦 Adora l'acqua</Text>
+          <TouchableOpacity style={{marginTop:10, backgroundColor:'white', padding:10, borderRadius:10, alignItems:'center', borderWidth:1, borderColor:'#FF6B4A'}}><Text style={{color:'#FF6B4A', fontWeight:'700'}}>Vedi profilo</Text></TouchableOpacity>
+        </View>
+      </View>
     </ScrollView>
   );
 }
