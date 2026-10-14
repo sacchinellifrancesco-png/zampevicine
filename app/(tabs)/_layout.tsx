@@ -1,57 +1,33 @@
 import { Tabs } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { Text } from 'react-native';
 
-export default function TabsLayout() {
+export default function TabLayout() {
   return (
-    <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: '#FF6B6B',
-        tabBarStyle: { height: 60 },
-      }}
-    >
-      {/* HOME - Vicino a te - quella che vedi già */}
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Vicino a te',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="map" size={size} color={color} />
-          ),
-        }}
+    <Tabs screenOptions={{
+      headerShown: false,
+      tabBarActiveTintColor: '#FF6B4A',
+      tabBarStyle: { backgroundColor: 'white', height: 80, paddingTop: 10 }
+    }}>
+      <Tabs.Screen 
+        name="index" 
+        options={{ 
+          title: 'Vicino',
+          tabBarIcon: () => <Text>📍</Text>
+        }} 
       />
-
-      {/* PAGINA CANE - prima dava errore, ora c'è */}
-      <Tabs.Screen
-        name="dog"
-        options={{
-          title: 'Il mio cane',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="paw" size={size} color={color} />
-          ),
-        }}
+      <Tabs.Screen 
+        name="dog" 
+        options={{ 
+          title: 'Cani',
+          tabBarIcon: () => <Text>🐶</Text>
+        }} 
       />
-
-      {/* PAGINA CHAT - prima dava errore, ora c'è */}
-      <Tabs.Screen
-        name="chat"
-        options={{
-          title: 'Chat',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="chatbubbles" size={size} color={color} />
-          ),
-        }}
-      />
-
-      {/* PROFILO - se ce l'hai già lascialo, altrimenti togli questo blocco */}
-      <Tabs.Screen
-        name="profile"
-        options={{
+      <Tabs.Screen 
+        name="profile" 
+        options={{ 
           title: 'Profilo',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person" size={size} color={color} />
-          ),
-        }}
+          tabBarIcon: () => <Text>👤</Text>
+        }} 
       />
     </Tabs>
   );
