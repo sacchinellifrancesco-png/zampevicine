@@ -6,7 +6,7 @@ config.resolver.unstable_enablePackageExports = false;
 config.resolver.resolveRequest = (context, moduleName, platform) => {
   if (platform === 'web' && moduleName === 'react-native-maps') {
     return {
-      filePath: require.resolve('react-native-web/dist/exports/View/index.js'),
+      filePath: __dirname + '/web-mock-maps.js',
       type: 'sourceFile',
     };
   }
