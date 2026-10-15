@@ -33,8 +33,6 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     },
     web: {
       bundler: 'metro',
-      // 'single' = SPA export: one index.html + client routing, so edge serving
-      // needs only a single 404→index.html fallback rule.
       output: 'single',
       favicon: './public/icons/icon-192.png',
     },
@@ -56,7 +54,6 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     ],
     experiments: {
       typedRoutes: true,
-      reactCompiler: true,
     },
   };
 };
