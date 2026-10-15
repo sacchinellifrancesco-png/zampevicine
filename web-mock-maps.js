@@ -1,28 +1,31 @@
 const React = require('react');
-const { View } = require('react-native-web');
+const { View, Text } = require('react-native-web');
 
-function Mock(name) {
-  const C = (props) => React.createElement(View, { style: [{ flex: 1, backgroundColor: '#e5e7eb' }, props.style] }, props.children);
-  C.displayName = name;
-  return C;
+function MapView({ style, initialRegion, region, children }) {
+  const lat = (initialRegion && initialRegion.latitude) || (region && region.latitude) || 42.5637;
+  const lng = (initialRegion && initialRegion.longitude) || (region && region.longitude) || 12.6444;
+  const d = 0.05;
+  const bbox = `${lng-d},${lat-d},${lng+d},${lat+d}`;
+  const src = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lng}`;
+
+  return React.createElement(View, { style: [{ flex: 1, height: 350, borderRadius: 24, overflow: 'hidden', backgroundColor: '#e5e7eb' }, style] },
+    React.createElement('iframe', {
+      src: src,
+      style: { width: '100%', height: '100%', border: 0 },
+      loading: 'lazy',
+      title: 'mappa'
+    })
+  );
 }
 
-const MapView = Mock('MapView');
-const Marker = Mock('Marker');
-const Polyline = Mock('Polyline');
-const Polygon = Mock('Polygon');
-const Circle = Mock('Circle');
-const Callout = Mock('Callout');
-const UrlTile = Mock('UrlTile');
-const Overlay = Mock('Overlay');
-
-MapView.Marker = Marker;
-MapView.Polyline = Polyline;
-MapView.Polygon = Polygon;
-MapView.Circle = Circle;
-MapView.Callout = Callout;
-MapView.UrlTile = UrlTile;
-MapView.Overlay = Overlay;
+const Dummy = (p) => React.createElement(View, null, p.children);
+MapView.Marker = Dummy;
+MapView.Polyline = Dummy;
+MapView.Polygon = Dummy;
+MapView.Circle = Dummy;
+MapView.Callout = Dummy;
+MapView.UrlTile = Dummy;
+MapView.Overlay = Dummy;
 MapView.PROVIDER_GOOGLE = 'google';
 MapView.PROVIDER_DEFAULT = 'default';
 MapView.Animated = MapView;
@@ -30,13 +33,13 @@ MapView.AnimatedRegion = function() {};
 
 module.exports = MapView;
 module.exports.default = MapView;
-module.exports.Marker = Marker;
-module.exports.Polyline = Polyline;
-module.exports.Polygon = Polygon;
-module.exports.Circle = Circle;
-module.exports.Callout = Callout;
-module.exports.UrlTile = UrlTile;
-module.exports.Overlay = Overlay;
+module.exports.Marker = Dummy;
+module.exports.Polyline = Dummy;
+module.exports.Polygon = Dummy;
+module.exports.Circle = Dummy;
+module.exports.Callout = Dummy;
+module.exports.UrlTile = Dummy;
+module.exports.Overlay = Dummy;
 module.exports.PROVIDER_GOOGLE = 'google';
 module.exports.PROVIDER_DEFAULT = 'default';
 module.exports.Animated = MapView;
