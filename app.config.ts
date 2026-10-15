@@ -1,59 +1,42 @@
-import type { ConfigContext, ExpoConfig } from '@expo/config';
+import { ExpoConfig, ConfigContext } from 'expo/config';
 
-type ExpoPlugins = NonNullable<ExpoConfig['plugins']>;
-
-export default ({ config }: ConfigContext): ExpoConfig => {
-  const nativePlugins: ExpoPlugins =
-    process.env.EXPO_PLATFORM === 'native'
-      ? [['expo-dev-client', { launchMode: 'most-recent' }]]
-      : [];
-
-  return {
-    ...config,
-    name: 'LeashLove',
-    slug: 'leashlove',
-    version: process.env.BILT_APP_VERSION ?? '1.0.0',
-    orientation: 'portrait',
-    userInterfaceStyle: 'automatic',
-    scheme: 'leashlove',
-    runtimeVersion: {
-      policy: 'appVersion',
+export default ({ config }: ConfigContext): ExpoConfig => ({
+  ...config,
+  name: 'zampevicine',
+  slug: 'zampevicine',
+  scheme: 'zampevicine',
+  version: '1.0.0',
+  orientation: 'portrait',
+  icon: './assets/icon.png',
+  userInterfaceStyle: 'light',
+  splash: {
+    image: './assets/splash.png',
+    resizeMode: 'contain',
+    backgroundColor: '#ffffff',
+  },
+  assetBundlePatterns: ['**/*'],
+  ios: {
+    supportsTablet: true,
+    bundleIdentifier: 'com.zampevicine.app',
+  },
+  android: {
+    adaptiveIcon: {
+      foregroundImage: './assets/adaptive-icon.png',
+      backgroundColor: '#ffffff',
     },
-    assetBundlePatterns: ['**/*'],
-    ios: {
-      deploymentTarget: '16.4',
-      infoPlist: {
-        ITSAppUsesNonExemptEncryption: false,
+    package: 'com.zampevicine.app',
+  },
+  web: {
+    bundler: 'metro',
+    output: 'single',
+    favicon: './assets/favicon.png',
+  },
+  plugins: [
+    [
+      'expo-location',
+      {
+        locationAlwaysAndWhenInUsePermission: 'Consenti a ZampeVicine di usare la tua posizione per mostrare pet sitter vicini.',
       },
-      supportsTablet: true,
-      bundleIdentifier: process.env.BILT_IOS_BUNDLE_ID ?? 'me.bilt.zampevicine',
-    },
-    android: {
-      package: process.env.BILT_ANDROID_PACKAGE ?? 'me.bilt.zampevicine',
-    },
-    web: {
-      bundler: 'metro',
-      output: 'single',
-      favicon: './public/icons/icon-192.png',
-    },
-    extra: {
-      appStoreAppId: process.env.BILT_APP_STORE_APP_ID,
-    },
-    plugins: [
-      'expo-router',
-      'expo-font',
-      ['expo-splash-screen', { backgroundColor: '#FFFBF5' }],
-      [
-        'expo-location',
-        {
-          locationWhenInUsePermission:
-            'LeashLove usa la tua posizione per trovare cani vicino a te e condividere la posizione durante la passeggiata.',
-        },
-      ],
-      ...nativePlugins,
     ],
-    experiments: {
-      typedRoutes: true,
-    },
-  };
-};
+  ],
+});
