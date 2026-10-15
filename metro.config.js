@@ -1,11 +1,8 @@
 const { getDefaultConfig } = require('expo/metro-config');
 
 const config = getDefaultConfig(__dirname);
-
-// Fix bug RN 0.74.5 + Expo 51 su Vercel
 config.resolver.unstable_enablePackageExports = false;
 
-// Fix mappa su web (react-native-maps non funziona su web)
 config.resolver.resolveRequest = (context, moduleName, platform) => {
   if (platform === 'web' && moduleName === 'react-native-maps') {
     return {
