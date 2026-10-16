@@ -1,7 +1,6 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import AcceptanceModal from '../components/AcceptanceModal';
 
 export default function Index() {
   const router = useRouter();
@@ -29,19 +28,32 @@ export default function Index() {
         </TouchableOpacity>
       </View>
 
-      <AcceptanceModal 
-        visible={showModal}
-        dogName="Luna"
-        onAccept={() => setShowModal(false)}
-        onCancel={() => setShowModal(false)}
-      />
+      {showModal && (
+        <View style={styles.overlay}>
+          <View style={styles.card}>
+            <Text style={styles.modalTitle}>Conferma richiesta</Text>
+            <Text style={styles.modalText}>
+              Stai richiedendo un incontro per Luna.{"\n\n"}
+              Regola di ZampeVicine:{"\n"}
+              50% responsabilità padrone / 50% benessere cane{"\n\n"}
+              Accetti di rispettare le regole del parco?
+            </Text>
+            <TouchableOpacity style={styles.primaryBtn} onPress={() => setShowModal(false)}>
+              <Text style={styles.btnText}>Accetto - Invia richiesta</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.secondaryBtn} onPress={() => setShowModal(false)}>
+              <Text style={styles.btnTextDark}>Annulla</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFF8F0', paddingHorizontal: 24 },
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  container: { flex: 1, backgroundColor: '#FFF8F0' },
+  center: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24 },
   logo: { width: 96, height: 96, backgroundColor: '#FF8C42', borderRadius: 30, alignItems: 'center', justifyContent: 'center', marginBottom: 20 },
   title: { fontSize: 32, fontWeight: '800', marginBottom: 8 },
   subtitle: { fontSize: 16, color: '#666', marginBottom: 30, textAlign: 'center' },
@@ -51,4 +63,8 @@ const styles = StyleSheet.create({
   btnTextDark: { color: '#333', fontWeight: '700', fontSize: 16 },
   linkBtn: { marginTop: 10 },
   linkText: { color: '#FF8C42', fontWeight: '600' },
+  overlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', alignItems: 'center', justifyContent: 'center', padding: 20 },
+  card: { backgroundColor: 'white', borderRadius: 16, padding: 20, width: '100%', maxWidth: 400 },
+  modalTitle: { fontSize: 20, fontWeight: '700', marginBottom: 12 },
+  modalText: { fontSize: 15, lineHeight: 22, marginBottom: 20 },
 });
