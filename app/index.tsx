@@ -1,30 +1,95 @@
-import { View, Text, TouchableOpacity } from 'react-native';
-import { useRouter } from 'expo-router';
+'use client'
+import { useState } from 'react'
+import AcceptanceModal from '@/components/AcceptanceModal'
+import { acceptRequest, rejectRequest } from '@/lib/matchLogic'
 
-export default function Index() {
-  const router = useRouter();
+type CaneVicino = {
+  id: string
+  ownerId: string
+  ownerNome: string
+  ownerFoto: string
+  dogNome: string
+  dogFoto: string
+  razza: string
+  eta: string
+  sesso: string
+  citta: string
+  distanza: string
+  bio: string
+}
+
+const fintiVicini: CaneVicino[] = [
+  {
+    id: 'req1',
+    ownerId: 'user2',
+    ownerNome: 'Sofia',
+    ownerFoto: 'https://i.pravatar.cc/150?img=5',
+    dogNome: 'Luna',
+    dogFoto: 'https://images.dog.ceo/breeds/retriever-golden/n02099601_100.jpg',
+    razza: 'Golden',
+    eta: '2 anni',
+    sesso: 'F',
+    citta: 'Milano',
+    distanza: '0.8',
+    bio: 'Usciamo ogni sera ai Giardini'
+  },
+  {
+    id: 'req2',
+    ownerId: 'user3',
+    ownerNome: 'Marco',
+    ownerFoto: 'https://i.pravatar.cc/150?img=8',
+    dogNome: 'Rocky',
+    dogFoto: 'https://images.dog.ceo/breeds/husky/n02110185_100.jpg',
+    razza: 'Husky',
+    eta: '3 anni',
+    sesso: 'M',
+    citta: 'Milano',
+    distanza: '1.2',
+    bio: 'Super energico'
+  }
+]
+
+export default function Page() {
+  const [showAccept, setShowAccept] = useState(false)
+  const [selected, setSelected] = useState<CaneVicino | null>(null)
+
+  const apriFinestra = (c: CaneVicino) => {
+    setSelected(c)
+    setShowAccept(true)
+  }
+
   return (
-    <View style={{flex:1, backgroundColor:'#FFFBF5', paddingHorizontal:24, paddingBottom:30}}>
-      {/* Centro */}
-      <View style={{flex:1, alignItems:'center', justifyContent:'center'}}>
-        <View style={{
-          width:96, height:96, backgroundColor:'#FFF1E8', borderRadius:26,
-          alignItems:'center', justifyContent:'center',
-          shadowColor:'#000', shadowOpacity:0.06, shadowRadius:12
-        }}>
-          <Text style={{fontSize:42}}>🐾</Text>
-        </View>
-        <Text style={{marginTop:22, fontSize:30, fontWeight:'900', letterSpacing:2.5, color:'#111'}}>LEASHLOVE</Text>
-        <Text style={{marginTop:8, color:'#8E8E8E', fontSize:14}}>Dove ogni coda trova un amico</Text>
-      </View>
+    <div className="min-h-screen bg-gray-50 p-4">
+      <h1 className="text-2xl font-bold mb-1">LeashLove</h1>
+      <p className="text-gray-500 mb-4">Cani vicini a te</p>
 
-      {/* Bottoni */}
-      <TouchableOpacity onPress={()=>router.replace('/(tabs)')} style={{backgroundColor:'#FF0E6B', height:56, borderRadius:28, alignItems:'center', justifyContent:'center'}}>
-        <Text style={{color:'#fff', fontWeight:'700', fontSize:17}}>Iscriviti</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={()=>router.replace('/(tabs)')} style={{marginTop:12, height:56, borderRadius:28, borderWidth:1.5, borderColor:'#FF0E6B', alignItems:'center', justifyContent:'center', backgroundColor:'#fff'}}>
-        <Text style={{color:'#FF0E6B', fontWeight:'700', fontSize:17}}>Entra</Text>
-      </TouchableOpacity>
-    </View>
+      <div className="grid gap-3">
+        {fintiVicini.map((c) => (
+          <div key={c.id} onClick={() => apriFinestra(c)} className="bg-white rounded-2xl p-3 flex gap-3 cursor-pointer shadow-sm">
+            <img src={c.dogFoto} className="w-16 h-16 rounded-full object-cover" alt={c.dogNome} />
+            <div>
+              <p className="font-bold">{c.dogNome} + {c.ownerNome}</p>
+              <p className="text-sm text-gray-500">{c.razza} - {c.citta} ({c.distanza} km)</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {showAccept && selected && (
+        <AcceptanceModal
+          dog={{ nome: selected.dogNome, foto: selected.dogFoto, razza: selected.razza, eta: selected.eta, sesso: selected.sesso }}
+          owner={{ nome: selected.ownerNome, foto: selected.ownerFoto, citta: selected.citta, distanzaKm: selected.distanza, bio: selected.bio }}
+          onAccept={async () => {
+            await acceptRequest(selected.id, 'mioId_TEMP', selected.ownerId)
+            setShowAccept(false)
+            alert('Hai accettato! Ora deve accettare anche l\'altro per aprire la chat')
+          }}
+          onReject={async () => {
+            await rejectRequest(selected.id)
+            setShowAccept(false)
+          }}
+        />
+      )}
+    </div>
   )
 }
