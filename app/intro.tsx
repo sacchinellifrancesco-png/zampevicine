@@ -1,118 +1,20 @@
-import { View, Text, TextInput, TouchableOpacity, ScrollView, Platform } from 'react-native';
-import { useRouter } from 'expo-router';
-import { useState } from 'react';
-
-const ETA = ['3 mesi','6 mesi','9 mesi','12 mesi','1 anno','2 anni','3 anni','4 anni','5 anni','6 anni','7 anni','8 anni','9 anni','10 anni','11 anni','12 anni','13 anni','14 anni','15 anni'];
-
-export default function Intro() {
-  const router = useRouter();
-  const [step, setStep] = useState(1);
-  const [msg, setMsg] = useState('');
-
-  // dati
-  const [nome, setNome] = useState('Francesco');
-  const [nomeCane, setNomeCane] = useState('ans');
-  const [email, setEmail] = useState('ptova123@gmail.com');
-  const [eta, setEta] = useState('2 anni');
-  const [showEta, setShowEta] = useState(false);
-  const [sesso, setSesso] = useState('Maschio');
-  const [sicurezza, setSicurezza] = useState('bianco');
-
-  const continua = () => {
-    if (!nome.trim() || !nomeCane.trim() || !email.trim()) {
-      setMsg('Completa tutti i campi');
-      return;
+const salva = async () => {
+  const nuovo = { nome, nomeCane, email, eta, sesso, sicurezza };
+  try {
+    if (Platform.OS === 'web') {
+      const vecchi = JSON.parse(localStorage.getItem('utenti') || '[]');
+      const filtrati = vecchi.filter((u:any)=> u.email !== email);
+      filtrati.push(nuovo);
+      localStorage.setItem('utenti', JSON.stringify(filtrati));
+      localStorage.setItem('mioCane', JSON.stringify(nuovo));
+    } else {
+      const AsyncStorage = (await import('@react-native-async-storage/async-storage')).default;
+      const vecchi = JSON.parse((await AsyncStorage.getItem('utenti')) || '[]');
+      const filtrati = vecchi.filter((u:any)=> u.email !== email);
+      filtrati.push(nuovo);
+      await AsyncStorage.setItem('utenti', JSON.stringify(filtrati));
+      await AsyncStorage.setItem('mioCane', JSON.stringify(nuovo));
     }
-    if (!email.includes('@')) {
-      setMsg('Email non valida');
-      return;
-    }
-    setMsg('');
-    setStep(2); // va al secondo step NELLA STESSA PAGINA
-  };
-
-  const salva = async () => {
-    try {
-      const dati = JSON.stringify({ nome, nomeCane, email, eta, sesso, sicurezza });
-      if (Platform.OS === 'web') {
-        localStorage.setItem('mioCane', dati);
-      } else {
-        const AsyncStorage = (await import('@react-native-async-storage/async-storage')).default;
-        await AsyncStorage.setItem('mioCane', dati);
-      }
-    } catch {}
-    router.replace('/(tabs)');
-  };
-
-  return (
-    <ScrollView style={{flex:1, backgroundColor:'#FFF8F0'}} contentContainerStyle={{padding:20, paddingTop:40, maxWidth:420, width:'100%', alignSelf:'center'}}>
-      
-      {step === 1 ? (
-        <>
-          <Text style={{fontSize:28, fontWeight:'800'}}>Crea account</Text>
-          <Text style={{color:'#666', marginTop:6, marginBottom:20}}>LeashLove - Entra nella community</Text>
-
-          <Text style={{fontWeight:'600', marginTop:12}}>Il tuo nome</Text>
-          <TextInput value={nome} onChangeText={setNome} placeholder="Francesco" style={{backgroundColor:'#fff', borderWidth:1, borderColor:'#ddd', borderRadius:12, padding:14, marginTop:6}} />
-
-          <Text style={{fontWeight:'600', marginTop:12}}>Nome del cane</Text>
-          <TextInput value={nomeCane} onChangeText={setNomeCane} placeholder="Hope" style={{backgroundColor:'#fff', borderWidth:1, borderColor:'#ddd', borderRadius:12, padding:14, marginTop:6}} />
-
-          <Text style={{fontWeight:'600', marginTop:12}}>Email</Text>
-          <TextInput value={email} onChangeText={setEmail} placeholder="email" autoCapitalize='none' style={{backgroundColor:'#fff', borderWidth:1, borderColor:'#ddd', borderRadius:12, padding:14, marginTop:6}} />
-
-          {msg ? <Text style={{color:'red', marginTop:10}}>{msg}</Text> : null}
-
-          <TouchableOpacity onPress={continua} style={{backgroundColor:'#FF8C42', padding:16, borderRadius:12, alignItems:'center', marginTop:20}}>
-            <Text style={{color:'#fff', fontWeight:'800', fontSize:16}}>Continua</Text>
-          </TouchableOpacity>
-        </>
-      ) : (
-        <>
-          <Text style={{fontSize:28, fontWeight:'800'}}>Il tuo cane</Text>
-          <Text style={{color:'#666', marginTop:4, marginBottom:20}}>Questo vedono gli altri a 250m</Text>
-
-          <Text style={{fontWeight:'600'}}>Nome: {nomeCane}</Text>
-
-          <Text style={{fontWeight:'600', marginTop:14}}>Età - finestrella</Text>
-          <TouchableOpacity onPress={()=>setShowEta(!showEta)} style={{backgroundColor:'#fff', borderWidth:1, borderColor:'#ddd', borderRadius:12, padding:14, marginTop:6}}>
-            <Text>{eta} ▼</Text>
-          </TouchableOpacity>
-          {showEta && (
-            <View style={{backgroundColor:'#fff', borderWidth:1, borderColor:'#ddd', borderRadius:12, marginTop:6}}>
-              {ETA.map(o=>(
-                <TouchableOpacity key={o} onPress={()=>{setEta(o); setShowEta(false)}} style={{padding:12}}>
-                  <Text style={{fontWeight: eta===o? '800':'400'}}>{o}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          )}
-
-          <Text style={{fontWeight:'600', marginTop:14}}>Sesso</Text>
-          <View style={{flexDirection:'row', gap:10, marginTop:6}}>
-            {['Maschio','Femmina'].map(s=>(
-              <TouchableOpacity key={s} onPress={()=>setSesso(s)} style={{flex:1, backgroundColor: sesso===s? '#FF8C42':'#fff', borderWidth:1, borderColor:'#ddd', borderRadius:12, padding:14, alignItems:'center'}}>
-                <Text style={{color: sesso===s? '#fff':'#000', fontWeight:'600'}}>{s}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-
-          <Text style={{fontWeight:'600', marginTop:14}}>Sicurezza</Text>
-          <TouchableOpacity onPress={()=>setSicurezza('bianco')} style={{backgroundColor: sicurezza==='bianco'? '#E8F5E9':'#fff', borderWidth:2, borderColor: sicurezza==='bianco'? '#4CAF50':'#ddd', borderRadius:12, padding:12, marginTop:6}}>
-            <Text style={{fontWeight:'700'}}>⚪ BIANCO - Tranquillo</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={()=>setSicurezza('giallo')} style={{backgroundColor: sicurezza==='giallo'? '#FFFDE7':'#fff', borderWidth:2, borderColor: sicurezza==='giallo'? '#FFC107':'#ddd', borderRadius:12, padding:12, marginTop:6}}>
-            <Text style={{fontWeight:'700'}}>🟡 GIALLO - Chiedere prima</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={()=>setSicurezza('rosso')} style={{backgroundColor: sicurezza==='rosso'? '#FFEBEE':'#fff', borderWidth:2, borderColor: sicurezza==='rosso'? '#F44336':'#ddd', borderRadius:12, padding:12, marginTop:6}}>
-            <Text style={{fontWeight:'700'}}>🔴 ROSSO - Non avvicinare</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={salva} style={{backgroundColor:'#FF8C42', padding:16, borderRadius:12, alignItems:'center', marginTop:28}}>
-            <Text style={{color:'#fff', fontWeight:'800', fontSize:16}}>Salva e inizia</Text>
-          </TouchableOpacity>
-        </>
-      )}
-    </ScrollView>
-  );
-}
+  } catch {}
+  router.replace('/(tabs)');
+};
