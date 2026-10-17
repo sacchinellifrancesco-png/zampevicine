@@ -1,19 +1,23 @@
 const config = {
-  name: "ZampeVicine",
-  slug: "zampevicine",
-  scheme: "zampevicine",
+  name: "LeashLove",
+  slug: "leashlove",
+  scheme: "leashlove",
   version: "1.0.0",
   orientation: "portrait",
   icon: "./assets/icon.png",
+  userInterfaceStyle: "light",
   web: {
     bundler: "metro",
     output: "single",
-    name: "ZampeVicine",
-    shortName: "ZampeVicine",
+    name: "LeashLove",
+    shortName: "LeashLove",
     backgroundColor: "#ffffff",
     themeColor: "#f97316"
   },
   plugins: ["expo-router"],
-  experiments: { typedRoutes: true }
+  experiments: {
+    typedRoutes: true
+  }
 };
+
 export default config;
