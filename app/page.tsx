@@ -1,27 +1,25 @@
 'use client';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
+import { useEffect, useState } from 'react';
 
-export default function Entra() {
-  const [email, setEmail] = useState('');
-  const router = useRouter();
+const MapView = dynamic(() => import('../components/MapView'), { ssr: false });
 
-  const handleEntra = () => {
-    if (!email) { alert('Inserisci email'); return; }
-    const user = { email, nome: 'Francesco', cane: 'Hope' };
-    localStorage.setItem('zampe_user', JSON.stringify(user));
-    router.push('/');
-  };
+export default function Home() {
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('zampe_user');
+    if (saved) setUser(JSON.parse(saved));
+  }, []);
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', background: '#f9f9f9' }}>
-      <div style={{ width: '100%', maxWidth: '400px', background: 'white', padding: '32px', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}>
-        <h1 style={{ textAlign: 'center', fontSize: '28px', fontWeight: 'bold', marginBottom: '24px' }}>Entra in ZampeVicine</h1>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} style={{ padding: '14px', borderRadius: '8px', border: '1px solid #ccc', width: '100%', boxSizing: 'border-box' }} />
-          <button onClick={handleEntra} style={{ padding: '14px', background: '#2c3e50', color: 'white', borderRadius: '8px', border: 'none', fontWeight: 'bold', cursor: 'pointer', width: '100%' }}>Entra</button>
-        </div>
+    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '20px', fontFamily: 'sans-serif' }}>
+      <h1 style={{ fontSize: '24px', fontWeight: 'bold' }}>LeashLove - 250m</h1>
+      <div style={{ background: '#fff3f0', border: '1px solid #ffccbc', padding: '12px', borderRadius: '12px', marginBottom: '16px', marginTop: '10px' }}>
+        <b>TU: {user?.nome || 'Francesco'} con {user?.cane || 'Hope'}</b><br />
+        <span style={{ fontSize: '12px' }}>{user?.email || ''}</span>
       </div>
+      <MapView />
     </div>
   );
 }
