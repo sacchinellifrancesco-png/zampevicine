@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic';
 
 const Map = dynamic(() => import('./map'), { 
   ssr: false,
-  loading: () => <div className="h-[400px] w-full bg-gray-100 rounded-xl flex items-center justify-center">Caricamento mappa...</div>
+  loading: () => <div style={{height:'400px', background:'#f3f3f3', borderRadius:'12px', display:'flex', alignItems:'center', justifyContent:'center'}}>Caricamento mappa...</div>
 });
 
 export default function Home() {
