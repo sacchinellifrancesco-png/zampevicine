@@ -1,5 +1,7 @@
-import { Stack } from 'expo-router';
-
-export default function RootLayout() {
-  return <Stack screenOptions={{ headerShown: false }} />;
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="it">
+      <body style={{ margin: 0, fontFamily: 'sans-serif' }}>{children}</body>
+    </html>
+  );
 }
