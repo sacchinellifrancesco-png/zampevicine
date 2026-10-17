@@ -1,20 +1,16 @@
-export default {
+import { ConfigContext, ExpoConfig } from 'expo/config';
+
+export default ({ config }: ConfigContext): ExpoConfig => ({
+  ...config,
   name: "LeashLove",
   slug: "leashlove",
   scheme: "leashlove",
-  version: "1.0.0",
   web: {
     bundler: "metro",
-    output: "single",
-    favicon: "./assets/favicon.png"
+    output: "single"
   },
   plugins: ["expo-router"],
   experiments: {
     typedRoutes: true
-  },
-  extra: {
-    router: {
-      origin: false
-    }
   }
-};
+});
