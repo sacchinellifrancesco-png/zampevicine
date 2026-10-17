@@ -1,16 +1,36 @@
 'use client';
 
+import dynamic from 'next/dynamic';
+import { useState } from 'react';
+
+const Map = dynamic(() => import('./components/Map'), { 
+  ssr: false,
+  loading: () => <div className="h-[400px] w-full bg-gray-100 rounded-xl flex items-center justify-center">Caricamento mappa...</div>
+});
+
 export default function Home() {
+  const [city, setCity] = useState('');
+
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '20px' }}>
-      <h1 style={{ fontSize: '24px', fontWeight: 'bold' }}>LeashLove - 250m</h1>
-      <div style={{ background: '#fff3f0', padding: '12px', borderRadius: '12px', margin: '12px 0', border: '1px solid #ffccbc' }}>
-        <b>TU: Francesco con Hope</b> - build di recupero
+    <main className="min-h-screen bg-white p-6">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-3xl font-bold mb-2">Zampe Vicine 🐾</h1>
+        <p className="text-gray-600 mb-6">Trova dog sitter vicino a te</p>
+
+        <div className="mb-6 flex gap-2">
+          <input
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            placeholder="Inserisci città..."
+            className="border p-3 rounded-lg flex-1"
+          />
+          <button className="bg-black text-white px-6 rounded-lg">
+            Cerca
+          </button>
+        </div>
+
+        <Map />
       </div>
-      <div style={{ height: '60vh', background: '#e0f2f1', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
-        <div style={{ fontSize: '40px' }}>✅</div>
-        <div style={{ fontWeight: 'bold' }}>Se vedi questo, Vercel è tornato Ready</div>
-      </div>
-    </div>
+    </main>
   );
 }
