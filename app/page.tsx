@@ -1,10 +1,10 @@
 'use client';
 
-import dynamic from 'next/dynamic';
+import dynamicImport from 'next/dynamic';
 
 export const dynamic = 'force-dynamic';
 
-const Map = dynamic(() => import('./map'), { 
+const Map = dynamicImport(() => import('./map'), { 
   ssr: false,
   loading: () => <div style={{height:'400px', background:'#f3f3f3', borderRadius:'12px', display:'flex', alignItems:'center', justifyContent:'center'}}>Caricamento mappa...</div>
 });
