@@ -1,25 +1,15 @@
 'use client';
-import { useState, useEffect } from 'react';
-
-export default function Map() {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-  if (!mounted) return <div style={{height:'400px', background:'#f3f3f3', borderRadius:'12px'}} />;
-
-  const { MapContainer, TileLayer, Marker, Popup } = require('react-leaflet');
-  require('leaflet/dist/leaflet.css');
-  const L = require('leaflet');
-  delete (L.Icon.Default.prototype as any)._getIconUrl;
-  L.Icon.Default.mergeOptions({
-    iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-    iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-    shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-  });
-
+import dynamicImport from 'next/dynamic';
+import { useEffect, useState } from 'react';
+const Map = dynamicImport(()=>import('../map'),{ssr:false});
+export default function Mappa(){
+  const [c,setC]=useState<any>(null);
+  useEffect(()=>{ const s=localStorage.getItem('zv_current'); if(s) setC(JSON.parse(s)); },[]);
   return (
-    <MapContainer center={[41.9028, 12.4964]} zoom={6} style={{ height: '400px', width: '100%', borderRadius: '12px' }}>
-      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-      <Marker position={[41.9028, 12.4964]}><Popup>Zampe Vicine</Popup></Marker>
-    </MapContainer>
+    <main className="min-h-screen p-6 max-w-4xl mx-auto bg-white">
+      <h1 className="text-xl font-bold">Ciao {c?.padrone} e {c?.cane} 🐾</h1>
+      <p className="text-sm text-gray-600 mb-4">{c?`${c.taglia} • ${c.eta} • ${c.carattere}`:'...'}</p>
+      <Map />
+    </main>
   );
 }
