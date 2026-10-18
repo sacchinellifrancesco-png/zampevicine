@@ -9,23 +9,21 @@ export default function IscrivitiPage() {
   const [check, setCheck] = useState({ privacy: false, termini: false, resp: false })
 
   function onFoto(e:any){ const f=e.target.files?.[0]; if(!f) return; const r=new FileReader(); r.onload=()=>setFoto(r.result as string); r.readAsDataURL(f) }
-
   function salva(e:any){
     e.preventDefault()
     if(!form.padrone || !form.cane) return alert('Nome padrone e cane obbligatori')
     if(!form.taglia || !form.energia || !form.indole) return alert('Seleziona le 3 caratteristiche')
-    if(!check.privacy || !check.termini || !check.resp) return alert('Devi accettare le 3 spunte GDPR')
+    if(!check.privacy || !check.termini || !check.resp) return alert('Devi accettare le 3 spunte')
     localStorage.setItem('zampevicine_profile', JSON.stringify({...form, foto}))
     router.push('/mappa')
   }
-
-  const Pill = ({g,v}:any)=>{ const sel=(form as any)[g]===v; return <button type="button" onClick={()=>setForm({...form,[g]:v})} className={`px-4 py-2 rounded-full text-sm font-bold border ${sel?'bg-black text-white border-black':'bg-white text-zinc-600'}`}>{v}</button> }
+  const Pill = ({g,v}:any)=>{ const sel=(form as any)[g]===v; return <button type="button" onClick={()=>setForm({...form,[g]:v})} className={`px-4 py-2 rounded-full text-sm font-bold border ${sel?'bg-black text-white border-black':'bg-white text-zinc-600'}`}>{v}</button>}
 
   return (
     <main className="min-h-screen bg-[#FFFBF0] p-6 flex justify-center">
       <form onSubmit={salva} className="w-full max-w-[420px] bg-white rounded-[2rem] p-6 border">
         <a href="/" className="font-black">🐾 Zampe Vicine</a>
-        <h1 className="text-[26px] font-black mt-4 leading-tight">Crea profilo cane + padrone</h1>
+        <h1 className="text-[26px] font-black mt-4">Crea profilo cane + padrone</h1>
 
         <div className="mt-5 flex gap-3 items-center">
           <div className="w-16 h-16 rounded-full bg-zinc-100 border overflow-hidden flex items-center justify-center">{foto ? <img src={foto} className="w-full h-full object-cover"/> : <>🐶</>}</div>
@@ -44,12 +42,13 @@ export default function IscrivitiPage() {
         <p className="mt-3 font-bold text-sm">Breve descrizione</p><textarea value={form.bio} onChange={e=>setForm({...form,bio:e.target.value})} rows={2} className="mt-1 w-full p-4 rounded-2xl border"></textarea>
 
         <div className="mt-6 space-y-3 text-[12px] leading-tight bg-zinc-50 p-4 rounded-2xl border">
-          <label className="flex gap-2"><input type="checkbox" checked={check.resp} onChange={e=>setCheck({...check,resp:e.target.checked})}/> Dichiaro di essere maggiorenne, proprietario del cane, con vaccini/microchip/assicurazione in regola, responsabile ex art.2052 c.c.</label>
+          <label className="flex gap-2"><input type="checkbox" checked={check.resp} onChange={e=>setCheck({...check,resp:e.target.checked})}/> Dichiaro di essere maggiorenne, proprietario del cane e responsabile ex art.2052 c.c.</label>
           <label className="flex gap-2"><input type="checkbox" checked={check.privacy} onChange={e=>setCheck({...check,privacy:e.target.checked})}/> Ho letto e accetto <a href="/privacy" className="underline font-bold">Privacy GDPR</a></label>
           <label className="flex gap-2"><input type="checkbox" checked={check.termini} onChange={e=>setCheck({...check,termini:e.target.checked})}/> Ho letto e accetto <a href="/termini" className="underline font-bold">Termini ed Esonero totale</a></label>
         </div>
 
         <button disabled={!check.privacy || !check.termini || !check.resp} className="mt-4 w-full p-4 rounded-full bg-black text-white font-black disabled:opacity-30">Salva e vai alla Mappa</button>
+        <p className="text-[10px] text-zinc-400 mt-2 text-center">Razza: dato interno non pubblico. Assicurazione cane facoltativa a livello nazionale.</p>
       </form>
     </main>
   )
