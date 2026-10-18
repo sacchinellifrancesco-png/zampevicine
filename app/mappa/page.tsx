@@ -1,12 +1,9 @@
-
-app/
-  entra/
-    page.tsx
-  iscriviti/
-    page.tsx
-  mappa/
-    page.tsx
-  globals.css
-  layout.tsx
-  map.tsx
-  page.tsx
+export default function Mappa(){
+  return (
+    <main style={{padding:40}}>
+      <h1>Mappa</h1>
+      <p>Pagina mappa funziona!</p>
+      <a href="/">Torna home</a>
+    </main>
+  )
+}
