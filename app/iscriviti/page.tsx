@@ -26,10 +26,19 @@ export default function IscrivitiPage() {
   function salva(e:any){
     e.preventDefault()
     if(!form.proprietario || !form.cane) return alert('Nome proprietario e cane obbligatori')
+    if(form.password.length < 8) return alert('Password minimo 8 caratteri')
     if(form.password !== form.conferma) return alert('Password non coincidono')
     if(!form.taglia || !form.energia || !form.indole) return alert('Seleziona le 3 caratteristiche')
     if(!check.privacy || !check.termini || !check.resp) return alert('Devi accettare le 3 spunte')
-    localStorage.setItem('leashlove_profile', JSON.stringify({...form, fotoCane, fotoPadrone}))
+    
+    const profileData = { ...form, fotoCane, fotoPadrone, createdAt: new Date().toISOString(), pagato: false }
+    
+    localStorage.setItem('leashlove_profile', JSON.stringify(profileData))
+    
+    const all = JSON.parse(localStorage.getItem('leashlove_profiles') || '[]')
+    all.push(profileData)
+    localStorage.setItem('leashlove_profiles', JSON.stringify(all))
+    
     router.push('/mappa')
   }
 
@@ -44,7 +53,6 @@ export default function IscrivitiPage() {
         <a href="/" className="font-black">🐾 Leash Love</a>
         <h1 className="text-[26px] font-black mt-4 leading-tight">Crea profilo cane + padrone</h1>
 
-        {/* 2 FOTO - APRONO GALLERIA TELEFONO */}
         <div className="mt-5 grid grid-cols-2 gap-3">
           <div className="border rounded-[1.5rem] p-3 flex flex-col items-center">
             <div className="w-20 h-20 rounded-full bg-[#FFE8CC] border overflow-hidden flex items-center justify-center">
