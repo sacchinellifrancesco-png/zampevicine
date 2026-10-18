@@ -2,38 +2,61 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
-export default function Iscriviti() {
+export default function CreaProfilo() {
   const router = useRouter()
-  const [form, setForm] = useState({ padrone: '', email: '', cane: '', razza: '' })
+  const [foto, setFoto] = useState('')
+  const [form, setForm] = useState({
+    padrone: '', email: '', cane: '', razza: '', bio: ''
+  })
+
+  function onFoto(e: any) {
+    const file = e.target.files[0]
+    if(!file) return
+    const reader = new FileReader()
+    reader.onload = () => setFoto(reader.result as string)
+    reader.readAsDataURL(file)
+  }
 
   function salva(e: any) {
     e.preventDefault()
-    if(!form.padrone || !form.cane) return alert('Metti nome tuo e del cane')
-    localStorage.setItem('zampevicine_profile', JSON.stringify(form))
+    if(!form.padrone || !form.cane) return alert('Inserisci nome padrone e nome cane')
+    const profile = {...form, foto, createdAt: new Date().toISOString()}
+    localStorage.setItem('zampevicine_profile', JSON.stringify(profile))
     router.push('/mappa')
   }
 
   return (
-    <main className="min-h-screen bg-white p-6 flex justify-center">
-      <form onSubmit={salva} className="w-full max-w-sm">
-        <a href="/" className="font-black text-xl">🐾 Zampe Vicine</a>
-        <h1 className="text-3xl font-black mt-6">Crea profilo</h1>
-        <p className="text-zinc-500 text-sm mt-1">Salviamo tutto sul telefono per ora, poi lo mettiamo online.</p>
-        
-        <label className="block mt-6 font-bold text-sm">Tu (padrone)</label>
-        <input value={form.padrone} onChange={e=>setForm({...form, padrone: e.target.value})} placeholder="Francesco" className="w-full p-4 rounded-2xl border bg-zinc-50 mt-1" />
-        
-        <label className="block mt-3 font-bold text-sm">Email</label>
-        <input value={form.email} onChange={e=>setForm({...form, email: e.target.value})} placeholder="tu@email.com" className="w-full p-4 rounded-2xl border bg-zinc-50 mt-1" />
-        
-        <label className="block mt-3 font-bold text-sm">Nome cane</label>
-        <input value={form.cane} onChange={e=>setForm({...form, cane: e.target.value})} placeholder="Luna" className="w-full p-4 rounded-2xl border bg-zinc-50 mt-1" />
-        
-        <label className="block mt-3 font-bold text-sm">Razza / età</label>
-        <input value={form.razza} onChange={e=>setForm({...form, razza: e.target.value})} placeholder="Labrador, 2 anni" className="w-full p-4 rounded-2xl border bg-zinc-50 mt-1" />
+    <main className="min-h-screen bg-[#FFFBF0] p-6 flex justify-center">
+      <form onSubmit={salva} className="w-full max-w-[420px] bg-white rounded-[2rem] p-6 shadow-sm border">
+        <a href="/" className="font-black">🐾 Zampa Vicine</a>
+        <h1 className="text-[28px] font-black mt-4 leading-tight">Crea profilo<br/>cane + padrone</h1>
 
-        <button className="mt-6 w-full p-4 rounded-2xl bg-black text-white font-black">Salva e vai alla Mappa con GPS</button>
-        <p className="text-center mt-3 text-sm"><a href="/entra" className="underline">Hai già un profilo? Entra</a></p>
+        <div className="mt-6 flex items-center gap-4">
+          <div className="w-20 h-20 rounded-full bg-zinc-100 overflow-hidden flex items-center justify-center border">
+            {foto ? <img src={foto} className="w-full h-full object-cover" /> : <span className="text-2xl">🐶</span>}
+          </div>
+          <label className="px-4 py-2 rounded-full border text-sm font-bold cursor-pointer">
+            Carica foto
+            <input type="file" accept="image/*" className="hidden" onChange={onFoto} />
+          </label>
+        </div>
+
+        <p className="mt-8 font-bold text-sm">Tu (padrone)</p>
+        <input value={form.padrone} onChange={e=>setForm({...form, padrone:e.target.value})} className="mt-2 w-full p-4 rounded-2xl border bg-white" />
+
+        <p className="mt-4 font-bold text-sm">Email</p>
+        <input value={form.email} onChange={e=>setForm({...form, email:e.target.value})} type="email" className="mt-2 w-full p-4 rounded-2xl border bg-white" />
+
+        <p className="mt-6 font-bold text-sm">Nome cane</p>
+        <input value={form.cane} onChange={e=>setForm({...form, cane:e.target.value})} className="mt-2 w-full p-4 rounded-2xl border bg-white" />
+
+        <p className="mt-4 font-bold text-sm">Razza</p>
+        <input value={form.razza} onChange={e=>setForm({...form, razza:e.target.value})} className="mt-2 w-full p-4 rounded-2xl border bg-white" />
+
+        <p className="mt-4 font-bold text-sm">Note</p>
+        <textarea value={form.bio} onChange={e=>setForm({...form, bio:e.target.value})} rows={3} className="mt-2 w-full p-4 rounded-2xl border bg-white"></textarea>
+
+        <button className="mt-8 w-full p-4 rounded-full bg-black text-white font-black">Salva e vai alla Mappa con GPS</button>
       </form>
     </main>
   )
