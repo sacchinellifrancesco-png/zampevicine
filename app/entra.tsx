@@ -1,39 +1,17 @@
-import { View, Text, TextInput, Pressable, StyleSheet, Alert } from 'react-native';
-import { useRouter } from 'expo-router';
+'use client';
 import { useState } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-export default function Entra() {
-  const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
-  const handleLogin = async () => {
-    if (!email || !password) {
-      Alert.alert('Compila tutti i campi');
-      return;
-    }
-    // salva utente finto per ora
-    await AsyncStorage.setItem('user', JSON.stringify({ email }));
-    router.replace('/'); // <--- FIX: non ricarica la pagina
-  };
-
+import { useRouter } from 'next/navigation';
+export default function Entra(){
+  const [p,setP]=useState(''); const [pw,setPw]=useState(''); const r=useRouter();
+  const login=(e:any)=>{e.preventDefault(); const u=JSON.parse(localStorage.getItem('zv_users')||'[]'); const f=u.find((x:any)=>x.padrone===p && x.password===pw); if(!f){alert('Dati errati');return;} localStorage.setItem('zv_current',JSON.stringify(f)); r.push('/mappa');};
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Entra in ZampeVicine</Text>
-      <TextInput style={styles.input} placeholder="Email" value={email} onChangeText={setEmail} autoCapitalize="none" />
-      <TextInput style={styles.input} placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry />
-      <Pressable style={styles.btn} onPress={handleLogin}>
-        <Text style={styles.btnText}>Entra</Text>
-      </Pressable>
-    </View>
+    <main className="min-h-screen p-6 max-w-md mx-auto bg-white">
+      <h1 className="text-2xl font-bold mb-6">Entra</h1>
+      <form onSubmit={login} className="flex flex-col gap-4">
+        <input required placeholder="Nome padrone" className="border p-3 rounded" value={p} onChange={e=>setP(e.target.value)}/>
+        <input required type="password" placeholder="Password" className="border p-3 rounded" value={pw} onChange={e=>setPw(e.target.value)}/>
+        <button className="bg-black text-white py-3 rounded-xl font-bold">Entra</button>
+      </form>
+    </main>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: 24, justifyContent: 'center', backgroundColor: '#fff' },
-  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 24, textAlign: 'center' },
-  input: { borderWidth: 1, borderColor: '#ddd', borderRadius: 12, padding: 14, marginBottom: 12 },
-  btn: { backgroundColor: '#111', padding: 16, borderRadius: 12, marginTop: 8 },
-  btnText: { color: '#fff', textAlign: 'center', fontWeight: 'bold' }
-});
