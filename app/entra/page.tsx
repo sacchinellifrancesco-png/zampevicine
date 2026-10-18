@@ -1,11 +1,9 @@
-app/
-  entra/
-    page.tsx  ✅
-  iscriviti/
-    page.tsx  ✅
-  mappa/
-    page.tsx  ✅
-  global.css
-  layout.tsx
-  map.tsx
-  page.tsx
+export default function Entra(){
+  return (
+    <main style={{padding:40}}>
+      <h1>Entra</h1>
+      <p>Pagina entra funziona!</p>
+      <a href="/">Torna home</a>
+    </main>
+  )
+}
