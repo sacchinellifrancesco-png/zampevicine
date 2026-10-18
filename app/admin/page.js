@@ -41,24 +41,21 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl font-bold mb-1">🐾 Zampe Vicine - Admin</h1>
+        <h1 className="text-3xl font-bold mb-1">🐾 Leash Love - Admin</h1>
         <p className="text-gray-500 mb-6">Clienti: {clienti.length} | Punti totali: {clienti.reduce((a,b)=>a+(b.punti||0),0)}</p>
 
-        {/* CERCA */}
         <input 
           placeholder="🔍 Cerca per nome o telefono..." 
           value={search} onChange={e=>setSearch(e.target.value)}
           className="w-full p-3 rounded-xl border border-gray-200 mb-6 shadow-sm"
         />
 
-        {/* AGGIUNGI NUOVO */}
         <div className="bg-white p-4 rounded-2xl shadow-sm border mb-6 flex flex-col md:flex-row gap-2">
           <input placeholder="Nome nuovo cliente" value={nome} onChange={e=>setNome(e.target.value)} className="flex-1 p-2.5 border rounded-xl" />
           <input placeholder="Telefono" value={telefono} onChange={e=>setTelefono(e.target.value)} className="flex-1 p-2.5 border rounded-xl" />
           <button onClick={aggiungiCliente} className="bg-black text-white px-6 py-2.5 rounded-xl font-bold">+ Aggiungi</button>
         </div>
 
-        {/* LISTA */}
         {loading ? <p>Carico...</p> : filtrati.map(c => (
           <div key={c.id} className="bg-white p-4 rounded-2xl shadow-sm border flex justify-between items-center mb-3">
             <div>
