@@ -1,9 +1,11 @@
-export default function Home() {
+export default function Mappa() {
   return (
-    <main>
-      <h1 style={{fontSize:40, color:'black'}}>Zampe Vicine FUNZIONA</h1>
-      <p style={{color:'black'}}>Se leggi questo il bianco è sparito</p>
-      <a href="/entra" style={{background:'black', color:'white', padding:12}}>Vai a /entra</a>
+    <main style={{padding:30, fontFamily:'system-ui'}}>
+      <h1 style={{color:'black'}}>Mappa</h1>
+      <div style={{background:'#eee', height:300, display:'flex', alignItems:'center', justifyContent:'center', margin:'20px 0'}}>
+        <p style={{color:'black'}}>Qui ci sarà la mappa vera</p>
+      </div>
+      <a href="/" style={{color:'black'}}>Home</a>
     </main>
   )
 }
