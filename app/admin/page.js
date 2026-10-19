@@ -1,6 +1,11 @@
 "use client"
 import { useState, useEffect } from "react"
-import { supabase } from "@/lib/supabase"
+import { createClient } from "@supabase/supabase-js"
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+)
 
 const PASSWORD_ADMIN = "LeashLove2026"
 
@@ -14,7 +19,7 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (sessionStorage.getItem("leash-auth") === "ok") setAuth(true)
+    if (typeof window !== "undefined" && sessionStorage.getItem("leash-auth") === "ok") setAuth(true)
   }, [])
 
   async function carica() {
@@ -64,11 +69,11 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
       <div className="max-w-3xl mx-auto">
-        <div className="flex justify-between">
-          <h1 className="text-3xl font-bold mb-1">🐾 Leash Love - Admin</h1>
-          <button onClick={()=>{sessionStorage.removeItem("leash-auth"); setAuth(false)}} className="text-sm text-gray-500">Esci</button>
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold">🐾 Admin</h1>
+          <button onClick={()=>{sessionStorage.removeItem("leash-auth"); setAuth(false)}} className="text-sm text-gray-500 underline">Esci</button>
         </div>
-        <p className="text-gray-500 mb-6">Clienti: {clienti.length}</p>
+        <p className="text-gray-500 mb-6 mt-1">Clienti totali: {clienti.length}</p>
         <input placeholder="🔍 Cerca per nome o telefono..." value={search} onChange={e=>setSearch(e.target.value)} className="w-full p-3 rounded-xl border mb-6" />
         <div className="bg-white p-4 rounded-2xl shadow-sm border mb-6 flex flex-col md:flex-row gap-2">
           <input placeholder="Nome" value={nome} onChange={e=>setNome(e.target.value)} className="flex-1 p-2.5 border rounded-xl" />
@@ -77,7 +82,7 @@ export default function AdminPage() {
         </div>
         {loading ? <p>Carico...</p> : filtrati.map(c => (
           <div key={c.id} className="bg-white p-4 rounded-2xl shadow-sm border flex justify-between items-center mb-3">
-            <div><p className="font-bold">{c.nome}</p><p className="text-gray-500 text-sm">{c.telefono} • {c.punti || 0} punti</p></div>
+            <div><p className="font-bold text-black">{c.nome}</p><p className="text-gray-600 text-sm">{c.telefono} • {c.punti||0} punti</p></div>
             <div className="flex gap-2">
               <button onClick={()=>aggiornaPunti(c.id, -10, c.punti)} className="w-10 h-10 rounded-full bg-gray-100 font-bold">-10</button>
               <button onClick={()=>aggiornaPunti(c.id, 10, c.punti)} className="w-10 h-10 rounded-full bg-black text-white font-bold">+10</button>
