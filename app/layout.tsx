@@ -1,12 +1,23 @@
-import "./globals.css";
-export const metadata = {
-  title: "Leash Love - Incontri per cani vicini a Roma",
-  description: "Trova cani compatibili vicino a te a Roma",
-};
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+import type { Metadata } from "next"
+import "./globals.css"
+import CookieBanner from "./CookieBanner"
+
+export const metadata: Metadata = {
+  title: "Leash Love - Fedeltà",
+  description: "Programma fedeltà Leash Love",
+}
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
     <html lang="it">
-      <body>{children}</body>
+      <body>
+        {children}
+        <CookieBanner />
+      </body>
     </html>
-  );
+  )
 }
