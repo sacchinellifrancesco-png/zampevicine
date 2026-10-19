@@ -1,11 +1,15 @@
 "use client"
+export const dynamic = 'force-dynamic'
+
 import { useState, useEffect } from "react"
 import { createClient } from "@supabase/supabase-js"
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-)
+function getSupabase() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  if (!url || !key) return null
+  return createClient(url, key)
+}
 
 const PASSWORD_ADMIN = "LeashLove2026"
 
@@ -23,6 +27,8 @@ export default function AdminPage() {
   }, [])
 
   async function carica() {
+    const supabase = getSupabase()
+    if (!supabase) return
     setLoading(true)
     const { data } = await supabase.from("clienti_fedelta").select("*").order("punti", { ascending: false })
     if (data) setClienti(data)
@@ -40,12 +46,14 @@ export default function AdminPage() {
 
   async function aggiungiCliente() {
     if (!nome || !telefono) return alert("Metti nome e telefono!")
+    const supabase = getSupabase()
     const { error } = await supabase.from("clienti_fedelta").insert([{ nome, telefono, punti: 0 }])
     if (error) alert(error.message)
     else { setNome(""); setTelefono(""); carica() }
   }
 
   async function aggiornaPunti(id, delta, puntiAttuali) {
+    const supabase = getSupabase()
     const nuovi = Math.max(0, (puntiAttuali || 0) + delta)
     await supabase.from("clienti_fedelta").update({ punti: nuovi }).eq("id", id)
     carica()
@@ -60,7 +68,6 @@ export default function AdminPage() {
           <h1 className="text-2xl font-bold mb-4">🐾 Leash Love - Admin</h1>
           <input type="password" placeholder="Password admin" value={pass} onChange={e=>setPass(e.target.value)} className="w-full p-3 border rounded-xl mb-3" />
           <button onClick={login} className="w-full bg-black text-white p-3 rounded-xl font-bold">Entra</button>
-          <p className="text-xs text-gray-400 mt-3">Default: LeashLove2026</p>
         </div>
       </div>
     )
@@ -74,7 +81,7 @@ export default function AdminPage() {
           <button onClick={()=>{sessionStorage.removeItem("leash-auth"); setAuth(false)}} className="text-sm text-gray-500 underline">Esci</button>
         </div>
         <p className="text-gray-500 mb-6 mt-1">Clienti totali: {clienti.length}</p>
-        <input placeholder="🔍 Cerca per nome o telefono..." value={search} onChange={e=>setSearch(e.target.value)} className="w-full p-3 rounded-xl border mb-6" />
+        <input placeholder="🔍 Cerca..." value={search} onChange={e=>setSearch(e.target.value)} className="w-full p-3 rounded-xl border mb-6" />
         <div className="bg-white p-4 rounded-2xl shadow-sm border mb-6 flex flex-col md:flex-row gap-2">
           <input placeholder="Nome" value={nome} onChange={e=>setNome(e.target.value)} className="flex-1 p-2.5 border rounded-xl" />
           <input placeholder="Telefono" value={telefono} onChange={e=>setTelefono(e.target.value)} className="flex-1 p-2.5 border rounded-xl" />
