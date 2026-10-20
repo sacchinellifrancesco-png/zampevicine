@@ -1,15 +1,25 @@
 import type { Metadata } from "next";
+import CookieBanner from "@/components/CookieBanner";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "LeashLove - Dove i cani di Roma si incontrano",
-  description: "Trova compagni di passeggiata per il tuo cane a Roma. Fase pilota gratuita.",
+  title: "ZampeVicine - Incontra cani vicino a te",
+  description: "Il social per padroni di cani a Roma. Trova cani vicino a te e organizza passeggiate.",
+  metadataBase: new URL("https://zampevicine.it"),
+  openGraph: {
+    title: "ZampeVicine",
+    description: "Trova cani vicino a te a Roma",
+    url: "https://zampevicine.it",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="it">
-      <body>{children}</body>
+      <body>
+        {children}
+        <CookieBanner />
+      </body>
     </html>
   );
 }
