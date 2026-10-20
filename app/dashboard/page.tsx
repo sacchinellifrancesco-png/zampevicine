@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { supabase } from "../../lib/supabase/client";
+import { supabase } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 
 export default function Dashboard() {
@@ -11,7 +11,7 @@ export default function Dashboard() {
     const load = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { router.push("/login"); return; }
-      const { data } = await supabase.from("dogs").select("*").eq("user_id", user.id).single();
+      const { data } = await supabase.from("dogs").select("*").eq("user_id", user.id).maybeSingle();
       setDog(data);
     };
     load();
