@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "../../lib/supabase/client";
+import { supabase } from "@/lib/supabase/client";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -9,7 +9,7 @@ export default function Login() {
   const [msg, setMsg] = useState("");
   const router = useRouter();
 
-  const handleLogin = async (e: any) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) { setMsg(error.message); return; }
@@ -26,6 +26,7 @@ export default function Login() {
         <button style={{ padding: 14, borderRadius: 99, background: "black", color: "white" }}>Entra</button>
       </form>
       {msg && <p style={{ marginTop: 15, color: "red" }}>{msg}</p>}
+      <p style={{ marginTop: 20, fontSize: 14 }}>Non hai account? <a href="/iscrizione" style={{ textDecoration: "underline" }}>Iscriviti</a></p>
     </div>
   );
 }
