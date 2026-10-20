@@ -1,56 +1,98 @@
 "use client";
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
 
-const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 export default function Iscrizione() {
-  const [ownerName, setOwnerName] = useState("");
-  const [dogName, setDogName] = useState("");
-  const [quartiere, setQuartiere] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [coords, setCoords] = useState<{lat:number,lng:number}|null>(null);
+  const router = useRouter();
+  const [step, setStep] = useState(1);
+  const [userId, setUserId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState("");
-  const router = useRouter();
 
-  useEffect(()=>{ supabase.auth.getUser().then(({data})=>{ if(data.user) router.push("/vicino"); }); },[]);
+  const [form, setForm] = useState({
+    owner_name: "",
+    dog_name: "",
+    breed: "",
+    age: "",
+    size: "Medio",
+    character_tags: "",
+    quartiere: "",
+    description: "",
+    lat: "",
+    lng: "",
+    privacy_accepted: false,
+  });
 
-  const getLocation = () => {
-    navigator.geolocation.getCurrentPosition(
-      p=>{ setCoords({lat:p.coords.latitude,lng:p.coords.longitude}); setMsg("📍 Posizione ok!"); },
-      ()=>setMsg("Attiva GPS dalle impostazioni")
-    );
+  const [files, setFiles] = useState({ dog: null, owner: null, together: null });
+  const [preview, setPreview] = useState({ dog: "", owner: "", together: "" });
+
+  useEffect(() => {
+    supabase.auth.getUser().then((res) => {
+      if (!res.data.user) router.push("/login");
+      else setUserId(res.data.user.id);
+    });
+  }, []);
+
+  const onFile = (type, f) => {
+    if (!f) return;
+    setFiles((prev) => ({ ...prev, [type]: f }));
+    setPreview((prev) => ({ ...prev, [type]: URL.createObjectURL(f) }));
   };
 
-  const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault(); setLoading(true); setMsg("");
-    const { data: authData, error: authError } = await supabase.auth.signUp({ email, password });
-    if (authError) { setMsg(authError.message.includes("already") ? "Sei già registrato, fai Entra" : authError.message); setLoading(false); return; }
-    const userId = authData.user?.id; if(!userId){ setMsg("Controlla email per confermare"); setLoading(false); return; }
-    const { error } = await supabase.from("dogs").upsert({ user_id: userId, owner_name: ownerName, dog_name: dogName, quartiere, lat: coords?.lat, lng: coords?.lng }, { onConflict: "user_id" });
-    if(error){ setMsg(error.message); setLoading(false); return; }
-    router.push("/vicino");
+  const getPos = () => {
+    navigator.geolocation.getCurrentPosition((p) => {
+      setForm({ ...form, lat: String(p.coords.latitude), lng: String(p.coords.longitude) });
+      setMsg("Posizione presa ok");
+    });
   };
 
-  return (
-    <div style={{ maxWidth: 400, margin: "40px auto", padding: 20 }}>
-      <Link href="/">← Home</Link>
-      <h1 style={{ fontSize: 26, fontWeight: 800, marginTop: 10 }}>Iscrivi il tuo cane</h1>
-      <p style={{ color: "#666" }}>Tinder style: ti facciamo vedere chi è vicino</p>
-      <form onSubmit={handleSignup} style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 20 }}>
-        <input placeholder="Il tuo nome" value={ownerName} onChange={e=>setOwnerName(e.target.value)} required style={{ padding: 12, borderRadius: 10, border: "1px solid #ddd" }} />
-        <input placeholder="Nome cane" value={dogName} onChange={e=>setDogName(e.target.value)} required style={{ padding: 12, borderRadius: 10, border: "1px solid #ddd" }} />
-        <input placeholder="Quartiere (Prati, Testaccio...)" value={quartiere} onChange={e=>setQuartiere(e.target.value)} required style={{ padding: 12, borderRadius: 10, border: "1px solid #ddd" }} />
-        <button type="button" onClick={getLocation} style={{ padding: 12, borderRadius: 10, border: coords ? "2px solid green" : "1px dashed black", background: coords ? "#e6f7e6" : "white" }}>{coords ? `✅ ${coords.lat.toFixed(4)} - Attiva` : "📍 ATTIVA GPS (fondamentale per vicini)"}</button>
-        <input type="email" placeholder="Email" value={email} onChange={e=>setEmail(e.target.value)} required style={{ padding: 12, borderRadius: 10, border: "1px solid #ddd" }} />
-        <input type="password" placeholder="Password forte" value={password} onChange={e=>setPassword(e.target.value)} required style={{ padding: 12, borderRadius: 10, border: "1px solid #ddd" }} />
-        <button disabled={loading} style={{ padding: 14, borderRadius: 99, background: "black", color: "white", fontWeight: 700 }}>{loading ? "..." : "Fatti scoprire →"}</button>
-      </form>
-      {msg && <p style={{ marginTop: 12, color: msg.includes("📍") || msg.includes("✅") ? "green" : "red" }}>{msg}</p>}
-    </div>
-  );
+  const uploadPhoto = async (file, name) => {
+    const path = userId + "/" + Date.now() + "_" + name + "_" + file.name;
+    const up = await supabase.storage.from("dog-photos").upload(path, file);
+    if (up.error) throw up.error;
+    const pub = supabase.storage.from("dog-photos").getPublicUrl(path);
+    return pub.data.publicUrl;
+  };
+
+  const handleSubmit = async () => {
+    if (!form.privacy_accepted) { setMsg("Devi accettare privacy"); return; }
+    if (!files.dog || !files.owner || !files.together) { setMsg("Servono 3 foto obbligatorie"); return; }
+    setLoading(true);
+    try {
+      const urlDog = await uploadPhoto(files.dog, "dog");
+      const urlOwner = await uploadPhoto(files.owner, "owner");
+      const urlTogether = await uploadPhoto(files.together, "together");
+
+      const ins = await supabase.from("dogs").insert({
+        user_id: userId,
+        owner_name: form.owner_name,
+        dog_name: form.dog_name,
+        breed: form.breed,
+        age: form.age,
+        size: form.size,
+        character_tags: form.character_tags,
+        quartiere: form.quartiere,
+        description: form.description,
+        lat: form.lat ? parseFloat(form.lat) : null,
+        lng: form.lng ? parseFloat(form.lng) : null,
+        photo_dog_url: urlDog,
+        photo_owner_url: urlOwner,
+        photo_together_url: urlTogether,
+        privacy_accepted: true,
+      });
+      if (ins.error) throw ins.error;
+      router.push("/vicino");
+    } catch (e) {
+      setMsg("Errore: " + e.message);
+    } finally { setLoading(false); }
+  };
+
+  return null as any;
 }
