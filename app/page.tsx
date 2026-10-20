@@ -9,16 +9,16 @@ function PartnerBanner() {
         </p>
         <div className="bg-white border border-dashed border-gray-300 rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm">
           <div className="text-left">
-            <h3 className="font-bold text-lg">Il tuo negozio / clinica qui?</h3>
+            <h3 className="font-bold text-lg">Hai un negozio o una clinica a Roma?</h3>
             <p className="text-sm text-gray-600 mt-1">
-              Stiamo selezionando 3 partner a Roma per la fase pilota gratuita.
+              Stiamo selezionando 3 partner per la fase pilota gratuita. Clicca qui per candidarti.
             </p>
           </div>
           <Link 
             href="/partner"
             className="bg-black text-white px-6 py-3 rounded-full text-sm font-medium whitespace-nowrap"
           >
-            Diventa Partner
+            Clicca qui - Diventa Partner
           </Link>
         </div>
       </div>
@@ -57,7 +57,7 @@ export default function Home() {
           <Link href="/privacy" className="underline">Privacy</Link>
           <Link href="/termini" className="underline">Termini</Link>
         </div>
-        <p>LeashLove - Progetto Pilota Roma 2026 - CF: SCCFNC82H29L117G</p>
+        <p>LeashLove - Progetto Pilota Roma 2026</p>
       </footer>
     </main>
   )
