@@ -7,7 +7,7 @@ export default function Register(){
   const [cane, setCane] = useState("")
 
   const handleWhatsApp = () => {
-    const numero = "393331234567" // <-- METTI QUI IL TUO NUMERO WHATSAPP SENZA +
+    const numero = "393755805693"
     const testo = `Ciao LeashLove! Voglio iscrivermi al pilota. Io sono ${nome} e il mio cane è ${cane}.`
     const url = `https://wa.me/${numero}?text=${encodeURIComponent(testo)}`
     window.open(url, "_blank")
@@ -38,7 +38,7 @@ export default function Register(){
           >
             Iscriviti via WhatsApp
           </button>
-          <p className="text-xs text-gray-400 text-center">Niente popup, apre direttamente WhatsApp</p>
+          <p className="text-xs text-gray-400 text-center">Apre direttamente WhatsApp</p>
         </div>
 
         <div className="text-center mt-6">
