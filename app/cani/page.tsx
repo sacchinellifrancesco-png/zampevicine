@@ -33,14 +33,16 @@ export default function CaniLista() {
         <Link href="/">← Home</Link>
         <Link href="/vicino" style={{ background: "black", color: "white", padding: "8px 14px", borderRadius: 99, fontSize: 14, textDecoration: "none" }}>Tinder vicino →</Link>
       </div>
+      
       <h1 style={{ fontWeight: 800, fontSize: 24, marginTop: 16 }}>Cani a Roma ({dogs.length})</h1>
       <p style={{ color: "#666", fontSize: 13, marginTop: 4 }}>Solo profili completi con foto insieme padrone+cane</p>
+
       {dogs.length===0 ? (
-        <div style={{ marginTop: 40, textAlign: "center", color: "#666" }}>Nessun cane completo ancora.</div>
+        <div style={{ marginTop: 40, textAlign: "center", color: "#666" }}>Nessun cane completo ancora. Iscriviti tu per primo!</div>
       ) : (
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 16 }}>
           {dogs.map(d=>(
-            <Link key={d.id} href={`/cani/${d.id}`} style={{ border: "1px solid #eee", borderRadius: 16, overflow: "hidden", textDecoration: "none", color: "black", background: "white" }}>
+            <Link key={d.id} href={`/cani/dettaglio?id=${d.id}`} style={{ border: "1px solid #eee", borderRadius: 16, overflow: "hidden", textDecoration: "none", color: "black", background: "white" }}>
               <img src={d.photo_together_url} alt={d.dog_name} style={{ width: "100%", height: 170, objectFit: "cover" }} />
               <div style={{ padding: 10 }}>
                 <div style={{ fontWeight: 700, fontSize: 15 }}>{d.dog_name} • {d.breed}</div>
