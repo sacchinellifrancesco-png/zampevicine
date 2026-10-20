@@ -1,64 +1,29 @@
-import Link from "next/link"
-
-function PartnerBanner() {
-  return (
-    <section className="w-full bg-yellow-50 border-y border-yellow-200 py-10">
-      <div className="max-w-4xl mx-auto px-6 text-center">
-        <p className="text-xs uppercase tracking-widest text-gray-500 mb-4">
-          I nostri partner - Fase Pilota Roma
-        </p>
-        <div className="bg-white border border-dashed border-gray-300 rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm">
-          <div className="text-left">
-            <h3 className="font-bold text-lg">Hai un negozio o una clinica a Roma?</h3>
-            <p className="text-sm text-gray-600 mt-1">
-              Stiamo selezionando 3 partner per la fase pilota gratuita. Clicca qui per candidarti.
-            </p>
-          </div>
-          <Link 
-            href="/partner"
-            className="bg-black text-white px-6 py-3 rounded-full text-sm font-medium whitespace-nowrap"
-          >
-            Clicca qui - Diventa Partner
-          </Link>
-        </div>
-      </div>
-    </section>
-  )
-}
+"use client";
+import Link from "next/link";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-white">
-      <header className="flex justify-between items-center px-6 py-4 max-w-6xl mx-auto">
-        <h1 className="text-xl font-bold">LeashLove 🐾</h1>
-        <div className="flex gap-3">
-          <Link href="/login" className="text-sm px-4 py-2">Entra</Link>
-          <Link href="/register" className="text-sm bg-black text-white px-5 py-2 rounded-full">Iscriviti</Link>
-        </div>
+    <div style={{ minHeight: "100vh", background: "white", color: "black" }}>
+      <header style={{ display: "flex", justifyContent: "space-between", padding: "16px 20px", borderBottom: "1px solid #eee" }}>
+        <Link href="/" style={{ fontWeight: 800, fontSize: 20 }}>LeashLove 🐶</Link>
+        <Link href="/login" style={{ border: "1px solid #ddd", padding: "8px 16px", borderRadius: 99, fontSize: 14 }}>Entra</Link>
       </header>
 
-      <section className="text-center px-6 py-20 max-w-3xl mx-auto">
-        <h2 className="text-4xl md:text-5xl font-bold leading-tight mb-4">
-          Dove i cani di Roma si incontrano.
-        </h2>
-        <p className="text-gray-600 mb-8">
-          Progetto pilota gratuito per far socializzare il tuo cane nel tuo quartiere.
-        </p>
-        <Link href="/register" className="bg-black text-white px-8 py-4 rounded-full font-medium inline-block">
-          Iscrivi il tuo cane gratis
-        </Link>
-        <p className="text-xs text-gray-400 mt-3">Fase pilota - 100% gratuito</p>
-      </section>
-
-      <PartnerBanner />
-
-      <footer className="text-center py-10 text-sm text-gray-400">
-        <div className="flex justify-center gap-4 mb-2">
-          <Link href="/privacy" className="underline">Privacy</Link>
-          <Link href="/termini" className="underline">Termini</Link>
+      <main style={{ maxWidth: 600, margin: "80px auto", padding: 20, textAlign: "center" }}>
+        <h1 style={{ fontSize: 42, fontWeight: 800, lineHeight: 1.1 }}>Dove i cani di Roma<br/>si incontrano.</h1>
+        <p style={{ color: "#666", marginTop: 16, fontSize: 18 }}>Fase pilota Roma - trova compagni di passeggiata vicino a te. 100% gratuito.</p>
+        
+        <div style={{ marginTop: 32, display: "flex", flexDirection: "column", gap: 12 }}>
+          <Link href="/iscrizione" style={{ background: "black", color: "white", padding: "16px 24px", borderRadius: 99, fontWeight: 600, textAlign: "center" }}>
+            Iscrivi il tuo cane gratis
+          </Link>
+          <Link href="/cani" style={{ border: "1px solid #ddd", padding: "16px 24px", borderRadius: 99, fontWeight: 600, textAlign: "center" }}>
+            Vedi i cani iscritti
+          </Link>
         </div>
-        <p>LeashLove - Progetto Pilota Roma 2026</p>
-      </footer>
-    </main>
-  )
+
+        <p style={{ marginTop: 40, fontSize: 14, color: "#999" }}>✓ No WhatsApp obbligatorio ✓ Dati al sicuro su Supabase</p>
+      </main>
+    </div>
+  );
 }
