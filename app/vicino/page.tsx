@@ -37,13 +37,12 @@ export default function VicinoConFoto() {
       );
       const { data } = await supabase.from("dogs")
         .select("*")
-        .neq("user_id", user.id)
         .eq("privacy_accepted", true)
         .not("photo_together_url","is",null);
       
       const { data: likes } = await supabase.from("dog_likes").select("to_dog_id").eq("from_user_id", user.id);
       const likedIds = new Set((likes||[]).map((l:any)=>l.to_dog_id));
-      let filtered = (data||[]).filter((d:any)=>!likedIds.has(d.id));
+      let filtered = (data||[]).filter((d:any)=> d.user_id !== user.id && !likedIds.has(d.id));
 
       setDogs(filtered);
       setLoading(false);
@@ -71,8 +70,8 @@ export default function VicinoConFoto() {
   
   if(!dogs.length || index >= dogs.length) return (
     <div style={{ maxWidth: 400, margin: "80px auto", padding: 20, textAlign: "center" }}>
-      <h1 style={{ fontWeight: 800, fontSize: 22 }}>Sei il primo nel tuo quartiere!</h1>
-      <p style={{ color: "#666", marginTop: 8, fontSize: 14 }}>Invita un amico per testare lo swipe con foto vere.</p>
+      <h1 style={{ fontWeight: 800, fontSize: 22 }}>Hai visto tutti! 🎉</h1>
+      <p style={{ color: "#666", marginTop: 8, fontSize: 14 }}>{dogs.length===0 ? "Nessun cane da mostrare" : "Torna più tardi"}</p>
       <Link href="/cani" style={{ display: "block", marginTop: 20, background: "black", color: "white", padding: 14, borderRadius: 99, textAlign: "center" }}>Vai a lista cani</Link>
     </div>
   );
@@ -84,7 +83,6 @@ export default function VicinoConFoto() {
         <Link href="/cani">Lista</Link>
       </header>
       <h2 style={{ textAlign: "center", fontWeight: 800 }}>Vicino a te 📍 {dogs.length-index} cani</h2>
-      
       <div style={{ position: "relative", height: 520, marginTop: 12 }}>
         <div style={{ position: "absolute", width: "100%", height: "100%", background: "white", borderRadius: 24, boxShadow: "0 12px 30px rgba(0,0,0,0.15)", overflow: "hidden", transform: anim || "none", transition: "transform 0.22s" }}>
           <img src={current.photo_together_url} alt={current.dog_name} style={{ width: "100%", height: 320, objectFit: "cover" }} />
@@ -95,7 +93,6 @@ export default function VicinoConFoto() {
           </div>
         </div>
       </div>
-
       <div style={{ display: "flex", justifyContent: "center", gap: 20, marginTop: 18 }}>
         <button onClick={()=>handleAction(false)} style={{ width: 62, height: 62, borderRadius: "50%", background: "white", border: "1px solid #ddd", fontSize: 26 }}>✕</button>
         <button onClick={()=>handleAction(true)} style={{ width: 72, height: 72, borderRadius: "50%", background: "black", color: "white", fontSize: 30, border: "none" }}>♥</button>
