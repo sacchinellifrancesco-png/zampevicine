@@ -1,16 +1,10 @@
 import type { Metadata } from "next";
-import CookieBanner from "@/components/CookieBanner";
+import CookieBanner from "../components/CookieBanner";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: "ZampeVicine - Incontra cani vicino a te",
   description: "Il social per padroni di cani a Roma. Trova cani vicino a te e organizza passeggiate.",
-  metadataBase: new URL("https://zampevicine.it"),
-  openGraph: {
-    title: "ZampeVicine",
-    description: "Trova cani vicino a te a Roma",
-    url: "https://zampevicine.it",
-  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
