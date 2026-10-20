@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@supabase/supabase-js";
 
@@ -9,54 +9,51 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-export default function WalkDetail() {
+export default function DogDetail(){
   const { id } = useParams();
-  const [walk, setWalk] = useState<any>(null);
-  const [participants, setParticipants] = useState<any[]>([]);
-  const [joined, setJoined] = useState(false);
-  const [userId, setUserId] = useState<string | null>(null);
-  const router = useRouter();
+  const [d, setD] = useState<any>(null);
 
-  useEffect(() => {
+  useEffect(()=>{
     const load = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUserId(user?.id || null);
-      const { data: walkData } = await supabase.from("walks").select("*").eq("id", id).single();
-      setWalk(walkData);
-      const { data: partData } = await supabase.from("walk_participants").select("*").eq("walk_id", id);
-      setParticipants(partData || []);
-      if (user && partData?.find((p:any)=>p.user_id===user.id)) setJoined(true);
+      const { data } = await supabase.from("dogs").select("*").eq("id", id).single();
+      setD(data);
     };
-    load();
-  }, [id]);
+    if(id) load();
+  },[id]);
 
-  const join = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { router.push("/login"); return; }
-    const { error } = await supabase.from("walk_participants").insert({ walk_id: id, user_id: user.id });
-    if (!error) { setJoined(true); setParticipants([...participants, { user_id: user.id }]); }
-    else alert(error.message);
-  };
-
-  if (!walk) return <div style={{ padding: 20 }}>Caricamento...</div>;
+  if(!d) return <div style={{ padding: 40, textAlign: "center" }}>Caricamento profilo...</div>;
 
   return (
-    <div style={{ maxWidth: 500, margin: "0 auto", padding: 20 }}>
-      <Link href="/passeggiate">← Tutte le passeggiate</Link>
-      <h1 style={{ fontSize: 28, fontWeight: 800, marginTop: 16 }}>{walk.park_name}</h1>
-      <p style={{ marginTop: 8 }}>📅 {walk.date} alle {walk.time}</p>
-      {walk.notes && <p style={{ marginTop: 8, color: "#666" }}>📝 {walk.notes}</p>}
-      <p style={{ marginTop: 12, fontSize: 14, color: "#666" }}>{participants.length} cani partecipano + organizzatore</p>
-
-      <div style={{ marginTop: 24 }}>
-        {joined ? (
-          <div style={{ background: "#e6f7e6", padding: 14, borderRadius: 12, textAlign: "center" }}>✅ Sei iscritto a questa passeggiata!</div>
-        ) : (
-          <button onClick={join} style={{ width: "100%", padding: 14, borderRadius: 99, background: "black", color: "white", fontWeight: 600 }}>Unisciti alla passeggiata 🐶</button>
-        )}
+    <div style={{ maxWidth: 500, margin: "0 auto", padding: 20, background: "#fafafa", minHeight: "100vh" }}>
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <Link href="/cani">← Lista</Link>
+        <Link href="/vicino" style={{ fontSize: 14 }}>Tinder →</Link>
       </div>
 
-      <Link href="/dashboard" style={{ display: "block", marginTop: 20, textAlign: "center", textDecoration: "underline", fontSize: 14 }}>Vai alla dashboard</Link>
+      <img src={d.photo_together_url} alt={d.dog_name} style={{ width: "100%", height: 380, objectFit: "cover", borderRadius: 20, marginTop: 14 }} />
+      
+      <h1 style={{ fontSize: 28, fontWeight: 800, marginTop: 14 }}>{d.dog_name} <span style={{ fontWeight: 400, fontSize: 16, color: "#666" }}>{d.breed} • {d.age}</span></h1>
+      <p style={{ color: "#333", marginTop: 4, fontSize: 15 }}>di {d.owner_name} • 📍 {d.quartiere} • {d.size}</p>
+      <div style={{ marginTop: 10, display: "inline-block", background: "white", border: "1px solid #eee", padding: "8px 12px", borderRadius: 99, fontSize: 13 }}>{d.character_tags}</div>
+      {d.description && <p style={{ marginTop: 12, fontSize: 14, lineHeight: 1.4, color: "#444" }}>{d.description}</p>}
+
+      <div style={{ marginTop: 20 }}>
+        <p style={{ fontSize: 13, fontWeight: 700, marginBottom: 8 }}>Altre foto verificate:</p>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+          <div>
+            <img src={d.photo_dog_url} alt="cane" style={{ width: "100%", height: 150, objectFit: "cover", borderRadius: 12 }} />
+            <div style={{ fontSize: 11, color: "#666", marginTop: 4, textAlign: "center" }}>Foto cane</div>
+          </div>
+          <div>
+            <img src={d.photo_owner_url} alt="padrone" style={{ width: "100%", height: 150, objectFit: "cover", borderRadius: 12 }} />
+            <div style={{ fontSize: 11, color: "#666", marginTop: 4, textAlign: "center" }}>Foto padrone</div>
+          </div>
+        </div>
+      </div>
+
+      <Link href="/vicino" style={{ display: "block", marginTop: 24, background: "black", color: "white", textAlign: "center", padding: 16, borderRadius: 99, fontWeight: 700, textDecoration: "none" }}>
+        Torna a swipe ♥
+      </Link>
     </div>
   );
 }
