@@ -6,7 +6,7 @@ export default function Partner(){
   const [negozio, setNegozio] = useState("")
 
   const handleWhatsApp = () => {
-    const numero = "393331234567" // <-- METTI QUI IL TUO NUMERO WHATSAPP
+    const numero = "393755805693"
     const testo = `Ciao LeashLove! Sono ${negozio} e voglio diventare partner pilota a Roma.`
     const url = `https://wa.me/${numero}?text=${encodeURIComponent(testo)}`
     window.open(url, "_blank")
