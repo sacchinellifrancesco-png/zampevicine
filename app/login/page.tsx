@@ -1,13 +1,31 @@
+"use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { supabase } from "../../lib/supabase/client";
 
-import Link from "next/link"
-export default function Login(){
+export default function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [msg, setMsg] = useState("");
+  const router = useRouter();
+
+  const handleLogin = async (e: any) => {
+    e.preventDefault();
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) { setMsg(error.message); return; }
+    router.push("/dashboard");
+  };
+
   return (
-    <main className="min-h-screen flex items-center justify-center p-6">
-      <div className="max-w-md w-full text-center">
-        <h1 className="text-3xl font-bold mb-4">Bentornato! 🐾</h1>
-        <p className="text-gray-600 mb-6">Il login per la fase pilota è quasi pronto.</p>
-        <Link href="/" className="bg-black text-white px-6 py-3 rounded-full inline-block">Torna alla Home</Link>
-      </div>
-    </main>
-  )
+    <div style={{ maxWidth: 400, margin: "60px auto", padding: 20 }}>
+      <a href="/" style={{ display: "block", marginBottom: 20 }}>← Torna alla home</a>
+      <h1 style={{ fontSize: 28, fontWeight: 700 }}>Entra</h1>
+      <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 20 }}>
+        <input placeholder="Email" type="email" value={email} onChange={e=>setEmail(e.target.value)} required style={{ padding: 12, borderRadius: 8, border: "1px solid #ddd" }} />
+        <input placeholder="Password" type="password" value={password} onChange={e=>setPassword(e.target.value)} required style={{ padding: 12, borderRadius: 8, border: "1px solid #ddd" }} />
+        <button style={{ padding: 14, borderRadius: 99, background: "black", color: "white" }}>Entra</button>
+      </form>
+      {msg && <p style={{ marginTop: 15, color: "red" }}>{msg}</p>}
+    </div>
+  );
 }
