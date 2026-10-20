@@ -1,10 +1,34 @@
 import Link from "next/link"
-import PartnerBanner from "./components/PartnerBanner"
+
+function PartnerBanner() {
+  return (
+    <section className="w-full bg-yellow-50 border-y border-yellow-200 py-10">
+      <div className="max-w-4xl mx-auto px-6 text-center">
+        <p className="text-xs uppercase tracking-widest text-gray-500 mb-4">
+          I nostri partner - Fase Pilota Roma
+        </p>
+        <div className="bg-white border border-dashed border-gray-300 rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm">
+          <div className="text-left">
+            <h3 className="font-bold text-lg">Il tuo negozio / clinica qui?</h3>
+            <p className="text-sm text-gray-600 mt-1">
+              Stiamo selezionando 3 partner a Roma per la fase pilota gratuita.
+            </p>
+          </div>
+          <a 
+            href="mailto:info@leashlove.it?subject=Diventare Partner LeashLove"
+            className="bg-black text-white px-6 py-3 rounded-full text-sm font-medium whitespace-nowrap"
+          >
+            Diventa Partner
+          </a>
+        </div>
+      </div>
+    </section>
+  )
+}
 
 export default function Home() {
   return (
     <main className="min-h-screen bg-white">
-      {/* HEADER */}
       <header className="flex justify-between items-center px-6 py-4 max-w-6xl mx-auto">
         <h1 className="text-xl font-bold">LeashLove 🐾</h1>
         <div className="flex gap-3">
@@ -13,7 +37,6 @@ export default function Home() {
         </div>
       </header>
 
-      {/* HERO */}
       <section className="text-center px-6 py-20 max-w-3xl mx-auto">
         <h2 className="text-4xl md:text-5xl font-bold leading-tight mb-4">
           Dove i cani di Roma si incontrano.
@@ -27,10 +50,8 @@ export default function Home() {
         <p className="text-xs text-gray-400 mt-3">Fase pilota - 100% gratuito</p>
       </section>
 
-      {/* BANNER PARTNER - QUI APPARE */}
       <PartnerBanner />
 
-      {/* FOOTER */}
       <footer className="text-center py-10 text-sm text-gray-400">
         <div className="flex justify-center gap-4 mb-2">
           <Link href="/privacy" className="underline">Privacy</Link>
