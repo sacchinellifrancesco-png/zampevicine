@@ -31,14 +31,12 @@ export default function CaniLista() {
     <div style={{ maxWidth: 600, margin: "0 auto", padding: 20 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <Link href="/">← Home</Link>
-        <Link href="/vicino" style={{ background: "black", color: "white", padding: "8px 14px", borderRadius: 99, fontSize: 14 }}>Tinder vicino →</Link>
+        <Link href="/vicino" style={{ background: "black", color: "white", padding: "8px 14px", borderRadius: 99, fontSize: 14, textDecoration: "none" }}>Tinder vicino →</Link>
       </div>
-      
       <h1 style={{ fontWeight: 800, fontSize: 24, marginTop: 16 }}>Cani a Roma ({dogs.length})</h1>
       <p style={{ color: "#666", fontSize: 13, marginTop: 4 }}>Solo profili completi con foto insieme padrone+cane</p>
-
       {dogs.length===0 ? (
-        <div style={{ marginTop: 40, textAlign: "center", color: "#666" }}>Nessun cane completo ancora. Iscriviti tu per primo!</div>
+        <div style={{ marginTop: 40, textAlign: "center", color: "#666" }}>Nessun cane completo ancora.</div>
       ) : (
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 16 }}>
           {dogs.map(d=>(
