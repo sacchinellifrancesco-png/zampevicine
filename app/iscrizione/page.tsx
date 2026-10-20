@@ -1,8 +1,7 @@
-
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "../../lib/supabase/client";
+import { supabase } from "@/lib/supabase/client";
 
 export default function Iscrizione() {
   const [ownerName, setOwnerName] = useState("");
@@ -13,7 +12,7 @@ export default function Iscrizione() {
   const [msg, setMsg] = useState("");
   const router = useRouter();
 
-  const handleSignup = async (e: any) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setMsg("");
