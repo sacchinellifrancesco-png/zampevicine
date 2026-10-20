@@ -14,12 +14,12 @@ function PartnerBanner() {
               Stiamo selezionando 3 partner a Roma per la fase pilota gratuita.
             </p>
           </div>
-          <a 
-            href="mailto:info@leashlove.it?subject=Diventare Partner LeashLove"
+          <Link 
+            href="/partner"
             className="bg-black text-white px-6 py-3 rounded-full text-sm font-medium whitespace-nowrap"
           >
             Diventa Partner
-          </a>
+          </Link>
         </div>
       </div>
     </section>
