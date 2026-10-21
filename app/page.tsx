@@ -23,7 +23,7 @@ function Cookie() {
       <p className="text-[#1E2A4A] text-[13px]"><b>Questo sito utilizza i cookie</b> per migliorare la tua esperienza. Puoi accettare o rifiutare.</p>
       <div className="flex gap-2 w-full md:w-auto">
         <button onClick={() => setV(false)} className="flex-1 px-5 py-2.5 rounded-xl bg-white border-2 border-[#1E2A4A] text-[#1E2A4A] font-bold text-sm">Rifiuta</button>
-        <button onClick={() => setV(false)} className="flex-1 px-6 py-2.5 rounded-xl bg-[#FF7A11] text-white font-black text-sm">Accetta</button>
+        <button onClick={() => setV(false)} className="flex-1 px-6 py-2.5 rounded-xl bg-[#FF8C42] text-white font-black text-sm">Accetta</button>
       </div>
     </div>
   )
@@ -37,17 +37,20 @@ export default function Home() {
     <main className="min-h-screen bg-[#FFFBF2]">
       <header className="bg-white max-w-7xl mx-auto flex justify-between items-center px-6 py-4 rounded-b-2xl shadow-sm mt-2 mx-4 md:mx-auto">
         <div className="flex items-center gap-2"><span className="text-3xl">🐾</span><span className="font-black text-[28px] text-[#1E2A4A]">LeashLove</span></div>
-        <a href="/login" className="px-6 py-2 border-2 border-[#1E2A4A] rounded-xl text-sm font-bold text-[#1E2A4A] bg-white">Accedi</a>
+        <div className="flex gap-3">
+          <a href="/login" className="px-6 py-2 border-2 border-[#1E2A4A] rounded-xl text-sm font-bold text-[#1E2A4A] bg-white">Accedi</a>
+          <a href="/signup" className="px-6 py-2 bg-[#FF8C42] rounded-xl text-sm font-bold text-white">Iscriviti</a>
+        </div>
       </header>
       <section className="max-w-7xl mx-auto p-4 md:p-6">
         <div className="bg-[#FFF2C2] rounded-[28px] overflow-hidden grid md:grid-cols-2 items-center p-2 md:p-3">
           <div className="p-6 md:p-10">
             <h1 className="text-[34px] md:text-[52px] font-black leading-[0.95] text-[#1E2A4A]">Trova un nuovo amico al tuo cane</h1>
             <p className="mt-4 text-[#1E2A4A]/80 text-[14px] max-w-sm">Connettiti con altri proprietari di cani vicino a te. Incontri, passeggiate e nuove amicizie pensate per te e per il tuo cucciolo.</p>
-            <a href="/signup" className="inline-block mt-6 bg-[#FF7A11] text-white rounded-xl px-8 py-3.5 font-black text-[18px]">Iscriviti</a>
+            <a href="/signup" className="inline-block mt-6 bg-[#FF8C42] text-white rounded-xl px-8 py-3.5 font-black text-[18px]">Iscriviti</a>
           </div>
           <div className="rounded-[20px] overflow-hidden h-[320px] md:h-[460px]">
-            <img src="https://images.unsplash.com/photo-1588943211346-0908a1fb0b01?q=80&w=900&auto=format&fit=crop" alt="Tre cani sul prato" className="w-full h-full object-cover" />
+            <img src="/dogs-hero.jpg" alt="Tre cani che giocano sul prato" className="w-full h-full object-cover" />
           </div>
         </div>
       </section>
