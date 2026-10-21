@@ -14,9 +14,9 @@ export default function CookieBanner() {
     setShow(false);
   };
   return (
-    <div style={{ position: "fixed", bottom: 12, left: 12, right: 12, background: "black", color: "white", borderRadius: 16, padding: 14, display: "flex", gap: 12, alignItems: "center", zIndex: 9999, fontSize: 13 }}>
-      <div style={{ flex: 1 }}>Usiamo solo cookie tecnici per login. Niente pubblicità. <Link href="/privacy" style={{ color: "white", textDecoration: "underline" }}>Privacy</Link></div>
-      <button onClick={ok} style={{ background: "white", color: "black", border: "none", borderRadius: 99, padding: "8px 16px", fontWeight: 700 }}>Ok</button>
+    <div style={{ position: "fixed", bottom: 16, left: 16, right: 16, background: "#FFF2C2", color: "#333", borderRadius: 16, padding: 16, display: "flex", gap: 12, alignItems: "center", zIndex: 9999, fontSize: 13, boxShadow: "0 8px 30px rgba(0,0,0,0.15)", border: "1px solid #FFE9A0" }}>
+      <div style={{ flex: 1 }}>Usiamo solo cookie tecnici per login. Niente pubblicità. <Link href="/privacy" style={{ color: "#333", textDecoration: "underline", fontWeight: 600 }}>Privacy</Link></div>
+      <button onClick={ok} style={{ background: "#FF8C42", color: "white", border: "none", borderRadius: 99, padding: "10px 20px", fontWeight: 700, cursor: "pointer" }}>Accetta</button>
     </div>
   );
 }
