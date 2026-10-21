@@ -1,1 +1,30 @@
-
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Iscriviti - LeashLove</title>
+<style>body{font-family:system-ui;padding:24px;max-width:400px;margin:auto}input,button{width:100%;padding:14px;margin:6px 0;border-radius:12px;border:1px solid #ddd}button{background:#000;color:#fff;font-weight:700}</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<a href="/">← Home</a>
+<h1>Iscriviti a LeashLove</h1>
+<input id="email" placeholder="Email" type="email">
+<input id="pass" placeholder="Password" type="password">
+<input id="nome" placeholder="Tuo nome">
+<input id="cane" placeholder="Nome cane">
+<p id="err" style="color:red"></p>
+<button onclick="go()">Salva e entra</button>
+<script>
+const SUPABASE_URL="INCOLLA_QUI_IL_TUO_URL"
+const SUPABASE_KEY="INCOLLA_QUI_LA_TUA_ANON_KEY"
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+async function go(){
+  const email=document.getElementById('email').value
+  const password=document.getElementById('pass').value
+  const {error}=await supabase.auth.signUp({email,password})
+  if(error){document.getElementById('err').innerText=error.message; return}
+  location.href="/"
+}
+</script>
+</body>
+</html>
