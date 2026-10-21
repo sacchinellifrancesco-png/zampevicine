@@ -1,31 +1,25 @@
-import Link from 'next/link'
-
+import Link from "next/link";
 export default function Home() {
   return (
-    <div className="min-h-screen bg-[#FFFDF8]">
+    <main className="min-h-screen">
       <header className="flex justify-between items-center p-6 max-w-6xl mx-auto">
-        <div className="font-black text-xl tracking-tight">Zampevicine 🐾</div>
-        <div className="flex gap-2">
-          <Link href="/login" className="px-5 py-2.5 rounded-full border bg-white text-sm font-medium">Accedi</Link>
-          <Link href="/iscriviti" className="px-5 py-2.5 rounded-full bg-black text-white text-sm font-medium">Iscriviti</Link>
+        <h1 className="text-2xl font-bold">🐾 ZampeVicine</h1>
+        <div className="flex gap-3">
+          <Link href="/login" className="px-4 py-2 rounded-full border">Accedi</Link>
+          <Link href="/iscrizione" className="px-5 py-2 rounded-full bg-amber-500 text-white">Iscriviti</Link>
         </div>
       </header>
-
-      <main className="max-w-6xl mx-auto px-6 mt-16 md:mt-28 grid md:grid-cols-2 gap-12 items-center">
+      <section className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-10 items-center pt-10">
         <div>
-          <h1 className="text-5xl md:text-6xl font-black leading-[0.95]">Trova il compagno perfetto per il tuo cane.</h1>
-          <p className="text-gray-600 mt-5 text-lg">La prima app di incontri per cani vicino a te a Roma. Parchi, razze, carattere.</p>
-          <Link href="/iscriviti" className="inline-block mt-8 px-8 py-4 rounded-full bg-black text-white font-semibold text-lg">Inizia ora - È gratis</Link>
-          <p className="text-xs text-gray-400 mt-3">Niente spam, solo code che scodinzolano.</p>
-        </div>
-        <div className="bg-white border rounded-[32px] p-8 shadow-[0_20px_80px_rgba(0,0,0,0.08)]">
-          <div className="h-64 bg-gray-100 rounded-2xl flex items-center justify-center text-6xl">🐶</div>
-          <div className="mt-6">
-            <div className="font-bold">Luna, 2 anni - Labrador</div>
-            <div className="text-sm text-gray-500">Prati • Socievole • Ama l'acqua</div>
+          <h2 className="text-5xl font-extrabold">Trova il<br/>compagno perfetto<br/><span className="text-amber-500">a 4 zampe</span></h2>
+          <p className="mt-6 text-lg text-zinc-600">Scorri da 300 metri a 150 km. Chat solo dopo il match.</p>
+          <div className="mt-8 flex gap-4">
+            <Link href="/match" className="px-8 py-3 bg-zinc-900 text-white rounded-full">Inizia a scorrere</Link>
+            <Link href="/vicino" className="px-8 py-3 bg-white border rounded-full">Chi è vicino</Link>
           </div>
         </div>
-      </main>
-    </div>
-  )
+        <div><img src="/dogs-hero.jpg" alt="3 cani" className="rounded-[2rem] shadow-2xl w-full h-[520px] object-cover" /></div>
+      </section>
+    </main>
+  );
 }
