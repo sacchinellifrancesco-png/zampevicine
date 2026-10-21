@@ -1,53 +1,69 @@
 'use client'
-import { useState } from 'react'
 import Link from 'next/link'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { createClient } from '@supabase/supabase-js'
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
 
 export default function IscrivitiPage() {
-  const [nome, setNome] = useState('')
   const [email, setEmail] = useState('')
-  const [pass, setPass] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+  const router = useRouter()
+
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
+    const { data, error } = await supabase.auth.signUp({ email, password })
+    if (error) {
+      setError(error.message)
+      setLoading(false)
+    } else {
+      router.push('/login')
+    }
+  }
 
   return (
-    <div className="min-h-screen bg-[#FFFDF8] flex flex-col">
-      <header className="p-6 max-w-6xl mx-auto w-full flex justify-between items-center">
-        <Link href="/" className="font-black text-xl">Zampevicine</Link>
-        <Link href="/accedi" className="text-sm underline">Hai già un account? Accedi</Link>
-      </header>
+    <div className="min-h-screen bg-[#FFFDF8] flex items-center justify-center p-6">
+      <div className="bg-white border rounded-[32px] p-8 w-full max-w-md shadow-[0_20px_80px_rgba(0,0,0,0.08)]">
+        <h1 className="text-3xl font-black">Iscriviti</h1>
+        <p className="text-gray-500 mt-2 text-sm">Gratis, ci metti 30 secondi.</p>
+        
+        <form onSubmit={handleSignup} className="mt-8 flex flex-col gap-4">
+          <input 
+            value={email} 
+            onChange={e=>setEmail(e.target.value)} 
+            placeholder="Email" 
+            type="email" 
+            required 
+            className="px-5 py-3 rounded-full border outline-none" 
+          />
+          <input 
+            value={password} 
+            onChange={e=>setPassword(e.target.value)} 
+            placeholder="Password (min 6)" 
+            type="password" 
+            required 
+            className="px-5 py-3 rounded-full border outline-none" 
+          />
+          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+          <button 
+            disabled={loading} 
+            className="px-8 py-4 rounded-full bg-black text-white font-semibold"
+          >
+            {loading ? 'Creo...' : 'Crea account →'}
+          </button>
+        </form>
 
-      <div className="flex-1 flex items-center justify-center p-6">
-        <div className="w-full max-w-md bg-white border rounded-[24px] p-8 shadow-sm">
-          <h1 className="text-3xl font-black text-center">Crea account</h1>
-          <p className="text-center text-gray-500 mt-2 mb-6 text-sm">Entra in Zampevicine in 30 secondi</p>
-          
-          <form onSubmit={(e) => e.preventDefault()} className="space-y-4">
-            <input 
-              value={nome} 
-              onChange={e=>setNome(e.target.value)} 
-              placeholder="Nome del tuo cane" 
-              className="w-full border rounded-full px-5 py-3.5" 
-              required 
-            />
-            <input 
-              value={email} 
-              onChange={e=>setEmail(e.target.value)} 
-              type="email" 
-              placeholder="tu@email.com" 
-              className="w-full border rounded-full px-5 py-3.5" 
-              required 
-            />
-            <input 
-              value={pass} 
-              onChange={e=>setPass(e.target.value)} 
-              type="password" 
-              placeholder="Password" 
-              className="w-full border rounded-full px-5 py-3.5" 
-              required 
-            />
-            <button className="w-full bg-black text-white rounded-full py-3.5 font-semibold mt-2">
-              Iscriviti gratis
-            </button>
-          </form>
-        </div>
+        <p className="text-sm text-center mt-6 text-gray-500">
+          Hai già un account? <Link href="/login" className="text-black font-semibold underline">Entra</Link>
+        </p>
       </div>
     </div>
   )
