@@ -1,48 +1,45 @@
 'use client'
-import { useState } from 'react'
-import { createClient } from '@supabase/supabase-js'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { createClient } from '@/utils/supabase/client'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
-
-export default function Login() {
+export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
   const router = useRouter()
+  const supabase = createClient()
 
-  const handleLogin = async () => {
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
     const { error } = await supabase.auth.signInWithPassword({ email, password })
     if (error) {
-      alert(error.message)
+      setError('Email o password errate. Riprova.')
+      setLoading(false)
     } else {
-      router.push('/')
+      router.push('/vicino')
     }
   }
 
   return (
-    <div className="p-10 max-w-md mx-auto">
-      <h1 className="text-3xl font-bold mb-6">Accedi</h1>
-      <input 
-        className="border p-3 w-full mb-3 rounded" 
-        placeholder="Email" 
-        onChange={e=>setEmail(e.target.value)} 
-      />
-      <input 
-        className="border p-3 w-full mb-6 rounded" 
-        type="password" 
-        placeholder="Password" 
-        onChange={e=>setPassword(e.target.value)} 
-      />
-      <button className="bg-black text-white p-3 w-full rounded" onClick={handleLogin}>
-        Accedi
-      </button>
-      <p className="mt-4 text-center">
-        Non hai account? <Link href="/iscriviti" className="underline">Iscriviti</Link>
-      </p>
+    <div className="min-h-screen bg-[#FFFDF8] flex items-center justify-center p-6">
+      <div className="bg-white border rounded-[32px] p-8 w-full max-w-md shadow-[0_20px_80px_rgba(0,0,0,0.08)]">
+        <h1 className="text-3xl font-black">Entra</h1>
+        <p className="text-gray-500 mt-2 text-sm">Ti porto subito dai cani vicino a te.</p>
+        
+        <form onSubmit={handleLogin} className="mt-8 flex flex-col gap-4">
+          <input value={email} onChange={e=>setEmail(e.target.value)} placeholder="Email" type="email" required className="px-5 py-3 rounded-full border outline-none" />
+          <input value={password} onChange={e=>setPassword(e.target.value)} placeholder="Password" type="password" required className="px-5 py-3 rounded-full border outline-none" />
+          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+          <button disabled={loading} className="px-8 py-4 rounded-full bg-black text-white font-semibold">{loading ? 'Entro...' : 'Entra e vedi chi è vicino →'}</button>
+        </form>
+
+        <p className="text-sm text-center mt-6 text-gray-500">Non sei iscritto? <Link href="/iscrizione" className="text-black font-semibold underline">Iscriviti qui</Link></p>
+      </div>
     </div>
   )
 }
