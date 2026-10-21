@@ -10,12 +10,12 @@ const supabase = createClient(
 )
 
 export default function IscrivitiPage() {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [tuoNome, setTuoNome] = useState('')
   const [nomeCane, setNomeCane] = useState('')
   const [razza, setRazza] = useState('')
   const [zona, setZona] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const router = useRouter()
@@ -25,7 +25,11 @@ export default function IscrivitiPage() {
     setLoading(true)
     setError('')
     const { error } = await supabase.auth.signUp({ email, password })
-    if (error) { setError(error.message); setLoading(false); return }
+    if (error) {
+      setError(error.message)
+      setLoading(false)
+      return
+    }
     router.push('/vicino')
   }
 
@@ -39,7 +43,7 @@ export default function IscrivitiPage() {
           <input value={nomeCane} onChange={e=>setNomeCane(e.target.value)} placeholder="Nome cane" className="border p-3 rounded-lg" />
           <input value={razza} onChange={e=>setRazza(e.target.value)} placeholder="Razza" className="border p-3 rounded-lg" />
           <input value={zona} onChange={e=>setZona(e.target.value)} placeholder="Quartiere" className="border p-3 rounded-lg" />
-          <hr className="my-2"/>
+          <hr />
           <input value={email} onChange={e=>setEmail(e.target.value)} placeholder="Email" type="email" required className="border p-3 rounded-lg" />
           <input value={password} onChange={e=>setPassword(e.target.value)} placeholder="Password" type="password" required className="border p-3 rounded-lg" />
           {error && <p className="text-red-500 text-sm">{error}</p>}
