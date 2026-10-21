@@ -30,7 +30,7 @@ export default function IscrivitiPage() {
       setLoading(false)
       return
     }
-    router.push('/vicino')
+    router.push('/')
   }
 
   return (
@@ -43,11 +43,10 @@ export default function IscrivitiPage() {
           <input value={nomeCane} onChange={e=>setNomeCane(e.target.value)} placeholder="Nome cane" className="border p-3 rounded-lg" />
           <input value={razza} onChange={e=>setRazza(e.target.value)} placeholder="Razza" className="border p-3 rounded-lg" />
           <input value={zona} onChange={e=>setZona(e.target.value)} placeholder="Quartiere" className="border p-3 rounded-lg" />
-          <hr />
           <input value={email} onChange={e=>setEmail(e.target.value)} placeholder="Email" type="email" required className="border p-3 rounded-lg" />
           <input value={password} onChange={e=>setPassword(e.target.value)} placeholder="Password" type="password" required className="border p-3 rounded-lg" />
           {error && <p className="text-red-500 text-sm">{error}</p>}
-          <button disabled={loading} className="bg-black text-white p-3 rounded-full font-semibold">{loading ? '...' : 'Salva e vai a Vicino →'}</button>
+          <button disabled={loading} className="bg-black text-white p-3 rounded-full">{loading?'...':'Iscriviti →'}</button>
         </form>
       </div>
     </div>
