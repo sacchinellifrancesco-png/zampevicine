@@ -9,13 +9,13 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
 
-export default function IscrizionePage() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+export default function IscrivitiPage() {
   const [tuoNome, setTuoNome] = useState('')
   const [nomeCane, setNomeCane] = useState('')
   const [razza, setRazza] = useState('')
   const [zona, setZona] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const router = useRouter()
@@ -33,14 +33,12 @@ export default function IscrizionePage() {
     <div className="min-h-screen bg-white p-6">
       <Link href="/" className="text-sm">← Home</Link>
       <div className="max-w-md mx-auto mt-8">
-        <h1 className="text-2xl font-bold">Iscrizione</h1>
-        <p className="text-sm text-gray-500">Prima crea account, poi profilo cane</p>
+        <h1 className="text-2xl font-bold">Iscriviti</h1>
         <form onSubmit={handle} className="mt-6 flex flex-col gap-3">
-          <h2 className="font-semibold">2. Profilo cane (anche per test)</h2>
           <input value={tuoNome} onChange={e=>setTuoNome(e.target.value)} placeholder="Tuo nome" className="border p-3 rounded-lg" />
           <input value={nomeCane} onChange={e=>setNomeCane(e.target.value)} placeholder="Nome cane" className="border p-3 rounded-lg" />
           <input value={razza} onChange={e=>setRazza(e.target.value)} placeholder="Razza" className="border p-3 rounded-lg" />
-          <input value={zona} onChange={e=>setZona(e.target.value)} placeholder="Quartiere / Indirizzo" className="border p-3 rounded-lg" />
+          <input value={zona} onChange={e=>setZona(e.target.value)} placeholder="Quartiere" className="border p-3 rounded-lg" />
           <hr className="my-2"/>
           <input value={email} onChange={e=>setEmail(e.target.value)} placeholder="Email" type="email" required className="border p-3 rounded-lg" />
           <input value={password} onChange={e=>setPassword(e.target.value)} placeholder="Password" type="password" required className="border p-3 rounded-lg" />
