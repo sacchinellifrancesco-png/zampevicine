@@ -50,7 +50,7 @@ export default function Home() {
             <a href="/signup" className="inline-block mt-6 bg-[#FF8C42] text-white rounded-xl px-8 py-3.5 font-black text-[18px]">Iscriviti</a>
           </div>
           <div className="rounded-[20px] overflow-hidden h-[320px] md:h-[460px]">
-            <img src="/dogs-hero.jpg" alt="Tre cani che giocano sul prato" className="w-full h-full object-cover" />
+            <img src="/dogs-hero%20(2).jpg" alt="Tre cani che giocano sul prato" className="w-full h-full object-cover" />
           </div>
         </div>
       </section>
