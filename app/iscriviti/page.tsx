@@ -9,61 +9,44 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
 
-export default function IscrivitiPage() {
+export default function IscrizionePage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [tuoNome, setTuoNome] = useState('')
+  const [nomeCane, setNomeCane] = useState('')
+  const [razza, setRazza] = useState('')
+  const [zona, setZona] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
-  const handleSignup = async (e: React.FormEvent) => {
+  const handle = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError('')
-    const { data, error } = await supabase.auth.signUp({ email, password })
-    if (error) {
-      setError(error.message)
-      setLoading(false)
-    } else {
-      router.push('/login')
-    }
+    const { error } = await supabase.auth.signUp({ email, password })
+    if (error) { setError(error.message); setLoading(false); return }
+    router.push('/vicino')
   }
 
   return (
-    <div className="min-h-screen bg-[#FFFDF8] flex items-center justify-center p-6">
-      <div className="bg-white border rounded-[32px] p-8 w-full max-w-md shadow-[0_20px_80px_rgba(0,0,0,0.08)]">
-        <h1 className="text-3xl font-black">Iscriviti</h1>
-        <p className="text-gray-500 mt-2 text-sm">Gratis, ci metti 30 secondi.</p>
-        
-        <form onSubmit={handleSignup} className="mt-8 flex flex-col gap-4">
-          <input 
-            value={email} 
-            onChange={e=>setEmail(e.target.value)} 
-            placeholder="Email" 
-            type="email" 
-            required 
-            className="px-5 py-3 rounded-full border outline-none" 
-          />
-          <input 
-            value={password} 
-            onChange={e=>setPassword(e.target.value)} 
-            placeholder="Password (min 6)" 
-            type="password" 
-            required 
-            className="px-5 py-3 rounded-full border outline-none" 
-          />
-          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-          <button 
-            disabled={loading} 
-            className="px-8 py-4 rounded-full bg-black text-white font-semibold"
-          >
-            {loading ? 'Creo...' : 'Crea account →'}
-          </button>
+    <div className="min-h-screen bg-white p-6">
+      <Link href="/" className="text-sm">← Home</Link>
+      <div className="max-w-md mx-auto mt-8">
+        <h1 className="text-2xl font-bold">Iscrizione</h1>
+        <p className="text-sm text-gray-500">Prima crea account, poi profilo cane</p>
+        <form onSubmit={handle} className="mt-6 flex flex-col gap-3">
+          <h2 className="font-semibold">2. Profilo cane (anche per test)</h2>
+          <input value={tuoNome} onChange={e=>setTuoNome(e.target.value)} placeholder="Tuo nome" className="border p-3 rounded-lg" />
+          <input value={nomeCane} onChange={e=>setNomeCane(e.target.value)} placeholder="Nome cane" className="border p-3 rounded-lg" />
+          <input value={razza} onChange={e=>setRazza(e.target.value)} placeholder="Razza" className="border p-3 rounded-lg" />
+          <input value={zona} onChange={e=>setZona(e.target.value)} placeholder="Quartiere / Indirizzo" className="border p-3 rounded-lg" />
+          <hr className="my-2"/>
+          <input value={email} onChange={e=>setEmail(e.target.value)} placeholder="Email" type="email" required className="border p-3 rounded-lg" />
+          <input value={password} onChange={e=>setPassword(e.target.value)} placeholder="Password" type="password" required className="border p-3 rounded-lg" />
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+          <button disabled={loading} className="bg-black text-white p-3 rounded-full font-semibold">{loading ? '...' : 'Salva e vai a Vicino →'}</button>
         </form>
-
-        <p className="text-sm text-center mt-6 text-gray-500">
-          Hai già un account? <Link href="/login" className="text-black font-semibold underline">Entra</Link>
-        </p>
       </div>
     </div>
   )
