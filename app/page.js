@@ -1,28 +1,16 @@
+import Link from "next/link";
+
 export default function Home() {
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center bg-white px-6">
-      {/* Logo / Titolo */}
-      <div className="text-center mb-12">
-        <h1 className="text-5xl font-bold mb-2">LeashLove</h1>
-        <p className="text-gray-500">La community per chi ama i cani</p>
+    <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center">
+      <h1 className="text-4xl font-black">LeashLove 🐾</h1>
+      <p className="mt-3 text-zinc-500">Trova cani vicino a te con GPS live</p>
+      <div className="mt-8 flex flex-col gap-3 w-full max-w-xs">
+        <Link href="/iscrizione" className="bg-[#FF8F6B] text-white p-4 rounded-2xl font-bold text-center">Iscriviti</Link>
+        <Link href="/accedi" className="bg-white border p-4 rounded-2xl font-bold text-center">Accedi</Link>
+        <Link href="/vicino" className="bg-black text-white p-4 rounded-2xl font-bold text-center">Vedi cani vicino</Link>
+        <Link href="/admin" className="text-sm text-zinc-400 mt-4">Admin</Link>
       </div>
-
-      {/* Solo 2 tasti */}
-      <div className="w-full max-w-xs flex flex-col gap-4">
-        <a 
-          href="/login"
-          className="w-full bg-black text-white text-center py-4 rounded-full font-semibold text-lg"
-        >
-          Entra
-        </a>
-        
-        <a 
-          href="/register"
-          className="w-full bg-white text-black border border-black text-center py-4 rounded-full font-semibold text-lg"
-        >
-          Iscriviti
-        </a>
-      </div>
-    </main>
-  )
+    </div>
+  );
 }
