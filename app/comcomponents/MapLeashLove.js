@@ -9,15 +9,32 @@ export default function MapLeashLove({ pos, cani }) {
     if (!pos || !mapRef.current) return;
     let cancelled = false;
 
-    const init = async () => {
-      const L = await import("leaflet");
+    const loadLeaflet = () => {
+      return new Promise((resolve) => {
+        if (window.L) {
+          resolve(window.L);
+          return;
+        }
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
+        document.head.appendChild(link);
+
+        const script = document.createElement("script");
+        script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+        script.onload = () => resolve(window.L);
+        document.body.appendChild(script);
+      });
+    };
+
+    loadLeaflet().then((L) => {
       if (cancelled) return;
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
-        mapInstanceRef.current = null;
       }
       const map = L.map(mapRef.current).setView([pos.lat, pos.lng], 13);
       mapInstanceRef.current = map;
+
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: "© OpenStreetMap",
       }).addTo(map);
@@ -31,13 +48,13 @@ export default function MapLeashLove({ pos, cani }) {
       });
 
       L.marker([pos.lat, pos.lng], { icon: iconMe }).addTo(map).bindPopup("Sei qui 🐾");
+
       cani.forEach((c) => {
         if (!c.lat || !c.lng) return;
         L.marker([c.lat, c.lng]).addTo(map).bindPopup(`<div style="text-align:center"><img src="${c.foto_cane_url}" style="width:60px;height:60px;border-radius:50%;object-fit:cover"/><br><b>${c.nome_cane}</b><br>${c.dist.toFixed(1)} km</div>`);
       });
-    };
+    });
 
-    init();
     return () => {
       cancelled = true;
       if (mapInstanceRef.current) {
