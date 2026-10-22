@@ -21,11 +21,12 @@ export default function MappaPage() {
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(async (p) => {
-      const lat = p.coords.latitude; const lng = p.coords.longitude;
+      const lat = p.coords.latitude;
+      const lng = p.coords.longitude;
       setPos({ lat, lng });
       const myEmail = localStorage.getItem("leashlove_email");
       const { data } = await supabase.from("profiles").select("*").not("lat","is",null);
-      const conDist = (data||[]).filter(c=>c.email !== myEmail).map(c=>({...c, dist: distanzaKm(lat,lng,c.lat,c.lng)})).sort((a,b)=>a.dist-b.dist);
+      const conDist = (data || []).filter(c=>c.email !== myEmail).map(c=>({...c, dist: distanzaKm(lat,lng,c.lat,c.lng)})).sort((a,b)=>a.dist-b.dist);
       setCani(conDist);
     });
   }, []);
