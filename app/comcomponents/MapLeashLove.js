@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useRef } from "react";
-import "leaflet/dist/leaflet.css";
 
 export default function MapLeashLove({ pos, cani }) {
   const mapRef = useRef(null);
@@ -12,19 +11,15 @@ export default function MapLeashLove({ pos, cani }) {
 
     const init = async () => {
       const L = await import("leaflet");
-      
       if (cancelled) return;
-      
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
       }
-
       const map = L.map(mapRef.current).setView([pos.lat, pos.lng], 13);
       mapInstanceRef.current = map;
-
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "© OpenStreetMap"
+        attribution: "© OpenStreetMap",
       }).addTo(map);
 
       const iconMe = new L.Icon({
@@ -36,17 +31,13 @@ export default function MapLeashLove({ pos, cani }) {
       });
 
       L.marker([pos.lat, pos.lng], { icon: iconMe }).addTo(map).bindPopup("Sei qui 🐾");
-
       cani.forEach((c) => {
         if (!c.lat || !c.lng) return;
-        L.marker([c.lat, c.lng]).addTo(map).bindPopup(
-          `<div style="text-align:center"><img src="${c.foto_cane_url}" style="width:60px;height:60px;border-radius:50%;object-fit:cover"/><br><b>${c.nome_cane}</b><br>${c.dist.toFixed(1)} km<br>${c.nome_proprietario}</div>`
-        );
+        L.marker([c.lat, c.lng]).addTo(map).bindPopup(`<div style="text-align:center"><img src="${c.foto_cane_url}" style="width:60px;height:60px;border-radius:50%;object-fit:cover"/><br><b>${c.nome_cane}</b><br>${c.dist.toFixed(1)} km</div>`);
       });
     };
 
     init();
-
     return () => {
       cancelled = true;
       if (mapInstanceRef.current) {
