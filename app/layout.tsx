@@ -1,20 +1,14 @@
-import type { Metadata } from "next";
-import CookieBanner from "../components/CookieBanner";
 import "./globals.css";
 
-export const metadata: Metadata = {
-  metadataBase: new URL('https://leashlove.it'),
-  title: "LeashLove - Incontra cani vicino a te a Roma",
-  description: "Il social per padroni di cani a Roma. Trova cani vicino a te e organizza passeggiate.",
+export const metadata = {
+  title: "LeashLove",
+  description: "Trova cani vicino a te",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }) {
   return (
     <html lang="it">
-      <body>
-        {children}
-        <CookieBanner />
-      </body>
+      <body className="bg-zinc-50">{children}</body>
     </html>
   );
 }
