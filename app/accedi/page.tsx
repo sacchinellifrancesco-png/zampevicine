@@ -1,74 +1,45 @@
 "use client";
 import { useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { useRouter } from "next/navigation";
 
-export default function Accedi() {
-  const [email, setEmail] = useState("sacchinellifrancesco@gmail.com");
-  const [loading, setLoading] = useState(false);
+export default function AccediPage() {
+  const [email, setEmail] = useState("");
   const [msg, setMsg] = useState("");
   const router = useRouter();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const entra = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setMsg("");
-
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("email", email.trim().toLowerCase())
-      .single();
-
-    setLoading(false);
-
-    if (error || !data) {
-      setMsg("Email non trovata. Iscriviti prima!");
+    setMsg("Controllo...");
+    const { data } = await supabase.from("profiles").select("email").eq("email", email).maybeSingle();
+    
+    if (!data) {
+      setMsg("Email non trovata. Vai su Iscriviti prima.");
       return;
     }
-
-    localStorage.setItem("leashlove_user", JSON.stringify(data));
-    setMsg(`Bentornato ${data.nome}! Cane: ${data.nome_cane}`);
-
-    setTimeout(() => {
-      router.push("/");
-    }, 1500);
+    // Salva email e vai in mappa
+    localStorage.setItem("leashlove_email", email);
+    setMsg("Ok! Ti porto in mappa...");
+    router.push("/mappa");
   };
 
   return (
-    <main className="min-h-screen bg-[#fffef9] p-6">
-      <header className="flex justify-between max-w-5xl mx-auto">
-        <Link href="/" className="font-bold">🐾 LeashLove</Link>
-        <Link href="/" className="text-sm">← Home</Link>
-      </header>
-
-      <div className="max-w-md mx-auto mt-20 bg-white p-8 rounded-2xl border shadow-sm">
-        <h1 className="text-2xl font-bold">Accedi</h1>
-        
-        <form onSubmit={handleLogin} className="mt-6 space-y-4">
-          <input
-            required
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-3 border rounded-xl outline-none"
-            placeholder="sacchinellifrancesco@gmail.com"
-          />
-          <button
-            disabled={loading}
-            className="w-full py-3 bg-[#FF8F6B] text-white rounded-full font-bold disabled:opacity-50"
-          >
-            {loading ? "Controllo..." : "Accedi"}
-          </button>
-        </form>
-
-        {msg && (
-          <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-xl text-center font-bold text-green-700">
-            {msg}
-          </div>
-        )}
-      </div>
-    </main>
+    <div className="p-6 max-w-md mx-auto pb-20">
+      <h1 className="text-2xl font-bold">Accedi a LeashLove</h1>
+      <p className="text-sm text-gray-500 mt-1">Metti la mail con cui ti sei iscritto</p>
+      <form onSubmit={entra} className="mt-6">
+        <input 
+          value={email} 
+          onChange={e=>setEmail(e.target.value)}
+          placeholder="tua@email.com" 
+          className="w-full p-3 border rounded-xl"
+          required
+        />
+        <button className="w-full mt-4 p-3 bg-[#FF8F6B] text-white rounded-xl font-bold">
+          Entra e trova cani vicini
+        </button>
+      </form>
+      <p className="mt-4 text-sm font-bold">{msg}</p>
+    </div>
   );
 }
