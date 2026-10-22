@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 
-const MapLeashLove = dynamic(() => import("@/app/components/MapLeashLove"), { ssr: false });
+const MapLeashLove = dynamic(() => import("../components/MapLeashLove"), { ssr: false });
 
 function distanzaKm(lat1, lon1, lat2, lon2) {
   const R = 6371;
