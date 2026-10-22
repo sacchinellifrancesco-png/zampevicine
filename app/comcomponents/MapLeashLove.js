@@ -1,49 +1,60 @@
-
 "use client";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { useEffect, useRef } from "react";
 import "leaflet/dist/leaflet.css";
-import L from "leaflet";
-import { useEffect } from "react";
-
-const iconDog = new L.Icon({
-  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [0, -40]
-});
-
-const iconMe = new L.Icon({
-  iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png",
-  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-});
 
 export default function MapLeashLove({ pos, cani }) {
+  const mapRef = useRef(null);
+  const mapInstanceRef = useRef(null);
+
   useEffect(() => {
-    delete L.Icon.Default.prototype._getIconUrl;
-  }, []);
+    if (!pos || !mapRef.current) return;
+    let cancelled = false;
 
-  if (!pos) return <div className="h-[500px] bg-zinc-100 flex items-center justify-center rounded-2xl">Carico mappa...</div>;
+    const init = async () => {
+      const L = await import("leaflet");
+      
+      if (cancelled) return;
+      
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove();
+        mapInstanceRef.current = null;
+      }
 
-  return (
-    <MapContainer center={[pos.lat, pos.lng]} zoom={13} style={{ height: "500px", width: "100%", borderRadius: "16px" }}>
-      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-      <Marker position={[pos.lat, pos.lng]} icon={iconMe}>
-        <Popup>Sei qui 🐾</Popup>
-      </Marker>
-      {cani.map(c=>(
-        <Marker key={c.id} position={[c.lat, c.lng]} icon={iconDog}>
-          <Popup>
-            <div className="text-center">
-              <img src={c.foto_cane_url} className="w-16 h-16 rounded-full object-cover mx-auto" alt="" />
-              <p className="font-bold mt-2">{c.nome_cane} - {c.dist.toFixed(1)} km</p>
-              <p className="text-xs">{c.nome_proprietario}</p>
-            </div>
-          </Popup>
-        </Marker>
-      ))}
-    </MapContainer>
-  );
+      const map = L.map(mapRef.current).setView([pos.lat, pos.lng], 13);
+      mapInstanceRef.current = map;
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "© OpenStreetMap"
+      }).addTo(map);
+
+      const iconMe = new L.Icon({
+        iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png",
+        shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+      });
+
+      L.marker([pos.lat, pos.lng], { icon: iconMe }).addTo(map).bindPopup("Sei qui 🐾");
+
+      cani.forEach((c) => {
+        if (!c.lat || !c.lng) return;
+        L.marker([c.lat, c.lng]).addTo(map).bindPopup(
+          `<div style="text-align:center"><img src="${c.foto_cane_url}" style="width:60px;height:60px;border-radius:50%;object-fit:cover"/><br><b>${c.nome_cane}</b><br>${c.dist.toFixed(1)} km<br>${c.nome_proprietario}</div>`
+        );
+      });
+    };
+
+    init();
+
+    return () => {
+      cancelled = true;
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove();
+        mapInstanceRef.current = null;
+      }
+    };
+  }, [pos, cani]);
+
+  return <div ref={mapRef} style={{ height: "500px", width: "100%", borderRadius: "16px", background: "#f4f4f5" }} />;
 }
