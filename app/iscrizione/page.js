@@ -44,13 +44,13 @@ export default function Iscrizione() {
     <div className="max-w-md mx-auto p-4">
       <button onClick={()=>router.back()} className="mb-4">{'< Indietro'}</button>
       <h1 className="text-2xl font-bold mb-4">Iscrizione LeashLove</h1>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-        <input placeholder="Nome proprietario" required value={form.nome_proprietario} onChange={e=>setForm({...form, nome_proprietario:e.target.value})} className="border p-2 rounded"/>
-        <input placeholder="Nome cane" required value={form.nome_cane} onChange={e=>setForm({...form, nome_cane:e.target.value})} className="border p-2 rounded"/>
-        <input type="email" placeholder="test1@gmail.com" autoComplete="off" required value={form.email} onChange={e=>setForm({...form, email:e.target.value})} className="border p-2 rounded"/>
+      <form onSubmit={handleSubmit} autoComplete="off" className="flex flex-col gap-3">
+        <input placeholder="Nome proprietario" autoComplete="new-password" data-lpignore="true" data-form-type="other" name="field_owner_xyz" required value={form.nome_proprietario} onChange={e=>setForm({...form, nome_proprietario:e.target.value})} className="border p-2 rounded"/>
+        <input placeholder="Nome cane" autoComplete="new-password" data-lpignore="true" data-form-type="other" name="field_dog_xyz" required value={form.nome_cane} onChange={e=>setForm({...form, nome_cane:e.target.value})} className="border p-2 rounded"/>
+        <input type="email" placeholder="test1@gmail.com" autoComplete="new-password" autoCorrect="off" autoCapitalize="off" spellCheck="false" data-lpignore="true" data-form-type="other" name="field_email_xyz" required value={form.email} onChange={e=>setForm({...form, email:e.target.value})} className="border p-2 rounded"/>
         <div className="flex gap-2">
-          <input placeholder="Età proprietario" type="number" required value={form.eta_proprietario} onChange={e=>setForm({...form, eta_proprietario:e.target.value})} className="border p-2 rounded w-1/2"/>
-          <input placeholder="Età cane" type="number" required value={form.eta_cane} onChange={e=>setForm({...form, eta_cane:e.target.value})} className="border p-2 rounded w-1/2"/>
+          <input placeholder="Età proprietario" type="number" autoComplete="new-password" name="field_age1_xyz" required value={form.eta_proprietario} onChange={e=>setForm({...form, eta_proprietario:e.target.value})} className="border p-2 rounded w-1/2"/>
+          <input placeholder="Età cane" type="number" autoComplete="new-password" name="field_age2_xyz" required value={form.eta_cane} onChange={e=>setForm({...form, eta_cane:e.target.value})} className="border p-2 rounded w-1/2"/>
         </div>
         <select value={form.dog_size} onChange={e=>setForm({...form, dog_size:e.target.value})} className="border p-2 rounded">
           <option value="piccola">Piccola</option><option value="media">Media</option><option value="grande">Grande</option>
@@ -64,7 +64,7 @@ export default function Iscrizione() {
         <select value={form.dog_energia} onChange={e=>setForm({...form, dog_energia:e.target.value})} className="border p-2 rounded">
           <option value="bassa">Energia bassa</option><option value="media">Energia media</option><option value="alta">Energia alta</option>
         </select>
-        <textarea placeholder="Descrizione" value={form.descrizione} onChange={e=>setForm({...form, descrizione:e.target.value})} className="border p-2 rounded"/>
+        <textarea placeholder="Descrizione" autoComplete="new-password" data-lpignore="true" name="field_desc_xyz" value={form.descrizione} onChange={e=>setForm({...form, descrizione:e.target.value})} className="border p-2 rounded"/>
         <p className="text-sm">Carica 4 foto (minimo 2 obbligatorie)</p>
         <div className="grid grid-cols-2 gap-2">
           {[0,1,2,3].map(i=> <input key={i} type="file" accept="image/*" onChange={e=>{ const n=[...fotos]; n[i]=e.target.files[0]; setFotos(n)}} className="border p-1"/>)}
