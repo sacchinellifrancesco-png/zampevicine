@@ -1,24 +1,41 @@
-"use client";
-import { useState } from "react";
-import { supabase } from "@/lib/supabase";
+'use client'
+import { useState } from 'react'
+import { supabase } from '@/lib/supabase'
+import { useRouter } from 'next/navigation'
 
 export default function Accedi() {
-  const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
+  const router = useRouter()
+  const [email, setEmail] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  const handle = async () => {
-    setLoading(true);
-    const { data } = await supabase.from("profiles").select("*").eq("email", email).single();
-    if (!data) { alert("Email non trovata, iscriviti prima"); setLoading(false); return; }
-    localStorage.setItem("leashlove_email", email);
-    window.location.href = "/vicino";
-  };
+  const handleLogin = async (e) => {
+    e.preventDefault()
+    setLoading(true)
+    const { data } = await supabase.from('profiles').select('*').eq('email', email).single()
+    if (data) { localStorage.setItem('leashlove_user', JSON.stringify(data)); router.push('/mappa') }
+    else { alert('Email non trovata') }
+    setLoading(false)
+  }
 
   return (
-    <div className="p-6 max-w-md mx-auto">
-      <h1 className="text-2xl font-bold">Accedi a LeashLove</h1>
-      <input autoComplete="off" value={email} onChange={e=>setEmail(e.target.value)} placeholder="Es. esempio@leashlove.it" className="w-full mt-6 p-3 border rounded-xl" />
-      <button onClick={handle} disabled={loading} className="w-full mt-6 bg-black text-white p-4 rounded-2xl font-bold">{loading ? "..." : "Accedi e vedi cani vicino"}</button>
+    <div className="max-w-md mx-auto p-4">
+      <button onClick={()=>router.back()} className="mb-4">{'< Indietro'}</button>
+      <h1 className="text-2xl font-bold mb-4">Accedi</h1>
+      <form onSubmit={handleLogin} className="flex flex-col gap-3">
+        <input 
+          type="email" 
+          placeholder="test1@gmail.com"
+          autoComplete="off"
+          autoCorrect="off"
+          spellCheck="false"
+          name="leashlove_email_login"
+          required 
+          value={email} 
+          onChange={e=>setEmail(e.target.value)} 
+          className="border p-3 rounded"
+        />
+        <button disabled={loading} className="bg-black text-white p-3 rounded">{loading?'...':'Entra'}</button>
+      </form>
     </div>
-  );
+  )
 }
