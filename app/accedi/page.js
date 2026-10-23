@@ -6,57 +6,91 @@ import { useRouter } from 'next/navigation'
 export default function Accedi() {
   const router = useRouter()
   const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [readOnly, setReadOnly] = useState(true)
+  const [showPwd, setShowPwd] = useState(false)
 
-  useEffect(() => {
-    setEmail('')
-    setReadOnly(true)
-  }, [])
+  useEffect(()=>{ setReadOnly(true) },[])
 
   const handleLogin = async (e) => {
     e.preventDefault()
     setLoading(true)
-    const { data } = await supabase.from('profiles').select('*').eq('email', email).single()
-    if (data) { 
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('email', email.trim())
+        .eq('password', password)
+        .single()
+
+      if (error || !data) {
+        alert('Email o password errati')
+        setLoading(false)
+        return
+      }
+
       localStorage.setItem('leashlove_user', JSON.stringify(data))
-      router.push('/mappa') 
-    } else { 
-      alert('Email non trovata') 
+      router.push('/mappa')
+    } catch (err) {
+      alert('Errore: ' + err.message)
     }
     setLoading(false)
   }
 
   return (
-    <div className="max-w-md mx-auto p-4">
-      <button onClick={()=>router.back()} className="mb-4">{'< Indietro'}</button>
-      <h1 className="text-2xl font-bold mb-2">Accedi</h1>
-      <p className="mb-4 text-sm">Inserisci la tua email</p>
-      
-      <form onSubmit={handleLogin} autoComplete="off" className="flex flex-col gap-3">
-        {/* campi finti per fregare Edge */}
-        <input type="text" style={{display:'none'}} tabIndex={-1} />
-        <input type="password" style={{display:'none'}} tabIndex={-1} />
+    <div className="max-w-md mx-auto p-4 pb-20">
+      <button onClick={()=>router.back()} className="mb-6 text-sm">{'< Indietro'}</button>
+      <h1 className="text-2xl font-bold mb-1">Accedi</h1>
+      <p className="text-sm text-gray-500 mb-6">Bentornato su LeashLove</p>
 
-        <input 
-          type="text"
-          inputMode="email"
-          placeholder=""
-          autoComplete="off"
-          autoCorrect="off"
-          autoCapitalize="off"
-          spellCheck="false"
-          name="search_query"
-          readOnly={readOnly}
-          onFocus={()=>setReadOnly(false)}
-          required 
-          value={email} 
-          onChange={e=>setEmail(e.target.value)} 
-          className="border p-3 rounded w-full bg-white"
-        />
-        <button disabled={loading} className="bg-black text-white p-3 rounded">
-          {loading?'...':'Entra'}
+      <form onSubmit={handleLogin} autoComplete="off" className="flex flex-col gap-4">
+        {/* trucco anti-autofill Edge */}
+        <input type="text" style={{display:'none'}} />
+        <input type="password" style={{display:'none'}} />
+
+        <div>
+          <label className="text-sm font-semibold">Email:</label>
+          <input
+            type="text"
+            required
+            value={email}
+            readOnly={readOnly}
+            onFocus={()=>setReadOnly(false)}
+            onChange={e=>setEmail(e.target.value)}
+            className="border p-3 rounded-xl w-full mt-1 bg-white"
+            placeholder="tua@email.it"
+          />
+        </div>
+
+        <div>
+          <label className="text-sm font-semibold">Password:</label>
+          <div className="relative mt-1">
+            <input
+              type={showPwd ? "text" : "password"}
+              required
+              value={password}
+              onChange={e=>setPassword(e.target.value)}
+              className="border p-3 rounded-xl w-full bg-white pr-12"
+              placeholder="La tua password"
+            />
+            <button
+              type="button"
+              onClick={()=>setShowPwd(!showPwd)}
+              className="absolute right-3 top-3 text-sm text-gray-500"
+            >
+              {showPwd ? 'Nascondi' : 'Mostra'}
+            </button>
+          </div>
+        </div>
+
+        <button disabled={loading} className="bg-black text-white p-4 rounded-full font-bold mt-4">
+          {loading ? 'Controllo...' : 'Entra'}
         </button>
+
+        <p className="text-xs text-center text-gray-500 mt-2">
+          Non hai un account? <span onClick={()=>router.push('/iscrizione')} className="underline font-bold cursor-pointer">Iscriviti</span>
+        </p>
       </form>
     </div>
   )
