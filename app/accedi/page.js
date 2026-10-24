@@ -1,7 +1,54 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
+
+// Componente input che NON esiste finché non ci clicchi
+function NoAutofillInput({ value, onChange, placeholder, isPassword = false, inputMode = "text" }) {
+  const [active, setActive] = useState(false);
+  const inputRef = useRef(null);
+  // Nome casuale generato ogni volta, impossibile da salvare per Chrome
+  const [fieldName] = useState(() => `leash_${Math.random().toString(36).substring(7)}`);
+
+  useEffect(() => {
+    if (active && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [active]);
+
+  if (!active) {
+    return (
+      <div
+        onClick={() => setActive(true)}
+        className="mt-2 w-full px-4 py-3 rounded-xl border border-orange-100 bg-white text-left cursor-text"
+      >
+        {value ? (
+          <span className="text-black">{isPassword ? "•".repeat(value.length) : value}</span>
+        ) : (
+          <span className="text-gray-400">{placeholder}</span>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <input
+      ref={inputRef}
+      type={isPassword ? "password" : "text"}
+      inputMode={inputMode}
+      name={fieldName}
+      id={fieldName}
+      autoComplete="off"
+      data-lpignore="true"
+      data-1p-ignore="true"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      onBlur={() => { if (!value) setActive(false); }}
+      placeholder={placeholder}
+      className="mt-2 w-full px-4 py-3 rounded-xl border border-orange-100 bg-white outline-none focus:border-[#FF6B35] placeholder:text-gray-400 text-black"
+    />
+  );
+}
 
 export default function AccediPage() {
   const router = useRouter();
@@ -10,14 +57,12 @@ export default function AccediPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
+  const handleLogin = async () => {
     setError("");
     setLoading(true);
-
     const cleanEmail = email.trim().toLowerCase();
 
-    const { data, error } = await supabase
+    const { data, error: sbError } = await supabase
       .from("profiles")
       .select("*")
       .eq("email", cleanEmail)
@@ -26,7 +71,7 @@ export default function AccediPage() {
 
     setLoading(false);
 
-    if (error || !data) {
+    if (sbError || !data) {
       setError("Email o password non corretti");
       return;
     }
@@ -44,67 +89,39 @@ export default function AccediPage() {
       <h1 className="text-3xl font-bold text-[#2D6A4F] mb-2">Accedi</h1>
       <p className="text-gray-500 mb-8">Bentornato su LeashLove</p>
 
-      <form onSubmit={handleLogin} autoComplete="off" data-lpignore="true" data-form-type="other" className="flex flex-col gap-4">
+      {/* Niente più <form> così Chrome non lo vede come form di login */}
+      <div className="flex flex-col gap-4" onKeyDown={(e) => { if (e.key === 'Enter') handleLogin(); }}>
         
-        {/* CAMPI FIN TI PER FREGARE CHROME */}
-        <div aria-hidden="true" style={{ position: 'absolute', left: '-9999px', height: 0, overflow: 'hidden' }}>
-          <input type="text" name="prevent_autofill_username" autoComplete="username" tabIndex={-1} />
-          <input type="password" name="prevent_autofill_password" autoComplete="new-password" tabIndex={-1} />
-        </div>
-
-        {/* EMAIL */}
         <div>
           <label className="text-sm text-[#2D6A4F] font-semibold">Email</label>
-          <input
-            type="text"
-            inputMode="email"
-            id="leashlove_login_field_e_xyz92"
-            name="leashlove_login_field_e_xyz92"
-            autoComplete="off"
-            autoCorrect="off"
-            autoCapitalize="off"
-            spellCheck={false}
-            data-lpignore="true"
-            data-1p-ignore="true"
-            data-bwignore="true"
-            readOnly
-            onFocus={(e) => e.currentTarget.removeAttribute("readonly")}
-            placeholder="es. mario.rossi@email.com"
+          <NoAutofillInput
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="mt-2 w-full px-4 py-3 rounded-xl border border-orange-100 bg-white outline-none focus:border-[#FF6B35] placeholder:text-gray-400 placeholder:opacity-100"
+            onChange={setEmail}
+            placeholder="es. mario.rossi@email.com"
+            inputMode="email"
           />
         </div>
 
-        {/* PASSWORD */}
         <div>
           <label className="text-sm text-[#2D6A4F] font-semibold">Password</label>
-          <input
-            type="password"
-            id="leashlove_login_field_p_xyz92"
-            name="leashlove_login_field_p_xyz92"
-            autoComplete="new-password"
-            data-lpignore="true"
-            data-1p-ignore="true"
-            readOnly
-            onFocus={(e) => e.currentTarget.removeAttribute("readonly")}
-            placeholder="La tua password"
+          <NoAutofillInput
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="mt-2 w-full px-4 py-3 rounded-xl border border-orange-100 bg-white outline-none focus:border-[#FF6B35] placeholder:text-gray-400"
+            onChange={setPassword}
+            placeholder="La tua password"
+            isPassword={true}
           />
         </div>
 
         {error && <p className="text-red-500 text-sm">{error}</p>}
 
         <button
-          type="submit"
+          onClick={handleLogin}
           disabled={loading}
           className="mt-4 w-full bg-[#FF6B35] text-white py-3 rounded-xl font-bold disabled:opacity-50"
         >
           {loading ? "Accesso..." : "Accedi"}
         </button>
-      </form>
+      </div>
     </div>
   );
 }
