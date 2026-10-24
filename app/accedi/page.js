@@ -3,51 +3,64 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 
-// Componente input che NON esiste finché non ci clicchi
-function NoAutofillInput({ value, onChange, placeholder, isPassword = false, inputMode = "text" }) {
-  const [active, setActive] = useState(false);
+// Input invisibile a Chrome - vive dentro Shadow DOM
+function ShadowField({ value, onValueChange, placeholder, type = "text", inputMode }) {
+  const hostRef = useRef(null);
   const inputRef = useRef(null);
-  // Nome casuale generato ogni volta, impossibile da salvare per Chrome
-  const [fieldName] = useState(() => `leash_${Math.random().toString(36).substring(7)}`);
+  const callbackRef = useRef(onValueChange);
+  
+  useEffect(() => { callbackRef.current = onValueChange; }, [onValueChange]);
 
   useEffect(() => {
-    if (active && inputRef.current) {
-      inputRef.current.focus();
+    if (!hostRef.current) return;
+    if (hostRef.current.shadowRoot) return;
+
+    const shadow = hostRef.current.attachShadow({ mode: "open" });
+
+    const style = document.createElement("style");
+    style.textContent = `
+      input {
+        width: 100%;
+        padding: 12px 16px;
+        border-radius: 12px;
+        border: 1px solid #FFEDD5;
+        background: white;
+        outline: none;
+        font-size: 16px;
+        font-family: ui-sans-serif, system-ui;
+        box-sizing: border-box;
+      }
+      input:focus { border-color: #FF6B35; }
+      input::placeholder { color: #9CA3AF; opacity: 1; }
+    `;
+
+    const input = document.createElement("input");
+    input.type = type;
+    if (inputMode) input.inputMode = inputMode;
+    input.placeholder = placeholder;
+    input.autocomplete = "off";
+    input.setAttribute("data-lpignore", "true");
+    input.setAttribute("data-1p-ignore", "true");
+    input.name = `leash_${Math.random().toString(36).slice(2, 9)}`;
+    input.value = value || "";
+
+    input.addEventListener("input", (e) => {
+      callbackRef.current(e.target.value);
+    });
+
+    shadow.appendChild(style);
+    shadow.appendChild(input);
+    inputRef.current = input;
+  }, []);
+
+  // Sincronizza se cambi value da fuori
+  useEffect(() => {
+    if (inputRef.current && inputRef.current.value !== value) {
+      inputRef.current.value = value;
     }
-  }, [active]);
+  }, [value]);
 
-  if (!active) {
-    return (
-      <div
-        onClick={() => setActive(true)}
-        className="mt-2 w-full px-4 py-3 rounded-xl border border-orange-100 bg-white text-left cursor-text"
-      >
-        {value ? (
-          <span className="text-black">{isPassword ? "•".repeat(value.length) : value}</span>
-        ) : (
-          <span className="text-gray-400">{placeholder}</span>
-        )}
-      </div>
-    );
-  }
-
-  return (
-    <input
-      ref={inputRef}
-      type={isPassword ? "password" : "text"}
-      inputMode={inputMode}
-      name={fieldName}
-      id={fieldName}
-      autoComplete="off"
-      data-lpignore="true"
-      data-1p-ignore="true"
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      onBlur={() => { if (!value) setActive(false); }}
-      placeholder={placeholder}
-      className="mt-2 w-full px-4 py-3 rounded-xl border border-orange-100 bg-white outline-none focus:border-[#FF6B35] placeholder:text-gray-400 text-black"
-    />
-  );
+  return <div ref={hostRef} className="mt-2 w-full" />;
 }
 
 export default function AccediPage() {
@@ -70,12 +83,10 @@ export default function AccediPage() {
       .single();
 
     setLoading(false);
-
     if (sbError || !data) {
       setError("Email o password non corretti");
       return;
     }
-
     localStorage.setItem("leashlove_user", JSON.stringify(data));
     router.push("/mappa");
   };
@@ -89,36 +100,31 @@ export default function AccediPage() {
       <h1 className="text-3xl font-bold text-[#2D6A4F] mb-2">Accedi</h1>
       <p className="text-gray-500 mb-8">Bentornato su LeashLove</p>
 
-      {/* Niente più <form> così Chrome non lo vede come form di login */}
       <div className="flex flex-col gap-4" onKeyDown={(e) => { if (e.key === 'Enter') handleLogin(); }}>
-        
         <div>
           <label className="text-sm text-[#2D6A4F] font-semibold">Email</label>
-          <NoAutofillInput
+          <ShadowField
             value={email}
-            onChange={setEmail}
+            onValueChange={setEmail}
             placeholder="es. mario.rossi@email.com"
+            type="text"
             inputMode="email"
           />
         </div>
 
         <div>
           <label className="text-sm text-[#2D6A4F] font-semibold">Password</label>
-          <NoAutofillInput
+          <ShadowField
             value={password}
-            onChange={setPassword}
+            onValueChange={setPassword}
             placeholder="La tua password"
-            isPassword={true}
+            type="password"
           />
         </div>
 
         {error && <p className="text-red-500 text-sm">{error}</p>}
 
-        <button
-          onClick={handleLogin}
-          disabled={loading}
-          className="mt-4 w-full bg-[#FF6B35] text-white py-3 rounded-xl font-bold disabled:opacity-50"
-        >
+        <button onClick={handleLogin} disabled={loading} className="mt-4 w-full bg-[#FF6B35] text-white py-3 rounded-xl font-bold">
           {loading ? "Accesso..." : "Accedi"}
         </button>
       </div>
