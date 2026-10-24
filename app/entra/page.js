@@ -1,5 +1,4 @@
-
-import AccediForm from "../../components/AccediForm";
+import AccediForm from "./AccediForm";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
