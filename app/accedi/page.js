@@ -3,64 +3,73 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 
-// Input invisibile a Chrome - vive dentro Shadow DOM
-function ShadowField({ value, onValueChange, placeholder, type = "text", inputMode }) {
-  const hostRef = useRef(null);
-  const inputRef = useRef(null);
-  const callbackRef = useRef(onValueChange);
-  
-  useEffect(() => { callbackRef.current = onValueChange; }, [onValueChange]);
+function EditableDiv({ placeholder, value, onChange, isPassword, inputMode }) {
+  const ref = useRef(null);
 
+  // Sincronizza se svuoti da fuori
   useEffect(() => {
-    if (!hostRef.current) return;
-    if (hostRef.current.shadowRoot) return;
-
-    const shadow = hostRef.current.attachShadow({ mode: "open" });
-
-    const style = document.createElement("style");
-    style.textContent = `
-      input {
-        width: 100%;
-        padding: 12px 16px;
-        border-radius: 12px;
-        border: 1px solid #FFEDD5;
-        background: white;
-        outline: none;
-        font-size: 16px;
-        font-family: ui-sans-serif, system-ui;
-        box-sizing: border-box;
-      }
-      input:focus { border-color: #FF6B35; }
-      input::placeholder { color: #9CA3AF; opacity: 1; }
-    `;
-
-    const input = document.createElement("input");
-    input.type = type;
-    if (inputMode) input.inputMode = inputMode;
-    input.placeholder = placeholder;
-    input.autocomplete = "off";
-    input.setAttribute("data-lpignore", "true");
-    input.setAttribute("data-1p-ignore", "true");
-    input.name = `leash_${Math.random().toString(36).slice(2, 9)}`;
-    input.value = value || "";
-
-    input.addEventListener("input", (e) => {
-      callbackRef.current(e.target.value);
-    });
-
-    shadow.appendChild(style);
-    shadow.appendChild(input);
-    inputRef.current = input;
-  }, []);
-
-  // Sincronizza se cambi value da fuori
-  useEffect(() => {
-    if (inputRef.current && inputRef.current.value !== value) {
-      inputRef.current.value = value;
+    if (ref.current && ref.current.innerText !== value && value === "") {
+      ref.current.innerText = "";
     }
   }, [value]);
 
-  return <div ref={hostRef} className="mt-2 w-full" />;
+  const handleInput = () => {
+    if (!ref.current) return;
+    // Prende solo testo puro, no a capo
+    let text = ref.current.innerText.replace(/\n/g, "").replace(/\r/g, "");
+    // Limita a una riga
+    if (text.length > 100) {
+      text = text.substring(0, 100);
+      ref.current.innerText = text;
+      // Riporta cursore alla fine
+      const range = document.createRange();
+      const sel = window.getSelection();
+      range.selectNodeContents(ref.current);
+      range.collapse(false);
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+    onChange(text);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      // Fa partire login
+      document.getElementById("leashlove_login_btn")?.click();
+    }
+  };
+
+  const handlePaste = (e) => {
+    e.preventDefault();
+    const text = (e.clipboardData || window.clipboardData).getData("text");
+    document.execCommand("insertText", false, text.replace(/\n/g, ""));
+  };
+
+  return (
+    <>
+      <style>{`
+        [data-editable]:empty:before {
+          content: attr(data-placeholder);
+          color: #9CA3AF;
+          pointer-events: none;
+        }
+      `}</style>
+      <div
+        ref={ref}
+        contentEditable
+        suppressContentEditableWarning
+        data-editable
+        data-placeholder={placeholder}
+        inputMode={inputMode}
+        onInput={handleInput}
+        onKeyDown={handleKeyDown}
+        onPaste={handlePaste}
+        className="mt-2 w-full px-4 py-3 rounded-xl border border-orange-100 bg-white outline-none focus:border-[#FF6B35] min-h-[48px] text-[16px] text-black break-all"
+        style={isPassword ? { WebkitTextSecurity: "disc" } : {}}
+      />
+    </>
+  );
 }
 
 export default function AccediPage() {
@@ -100,31 +109,35 @@ export default function AccediPage() {
       <h1 className="text-3xl font-bold text-[#2D6A4F] mb-2">Accedi</h1>
       <p className="text-gray-500 mb-8">Bentornato su LeashLove</p>
 
-      <div className="flex flex-col gap-4" onKeyDown={(e) => { if (e.key === 'Enter') handleLogin(); }}>
+      <div className="flex flex-col gap-4">
         <div>
           <label className="text-sm text-[#2D6A4F] font-semibold">Email</label>
-          <ShadowField
-            value={email}
-            onValueChange={setEmail}
+          <EditableDiv
             placeholder="es. mario.rossi@email.com"
-            type="text"
+            value={email}
+            onChange={setEmail}
             inputMode="email"
           />
         </div>
 
         <div>
           <label className="text-sm text-[#2D6A4F] font-semibold">Password</label>
-          <ShadowField
-            value={password}
-            onValueChange={setPassword}
+          <EditableDiv
             placeholder="La tua password"
-            type="password"
+            value={password}
+            onChange={setPassword}
+            isPassword={true}
           />
         </div>
 
         {error && <p className="text-red-500 text-sm">{error}</p>}
 
-        <button onClick={handleLogin} disabled={loading} className="mt-4 w-full bg-[#FF6B35] text-white py-3 rounded-xl font-bold">
+        <button
+          id="leashlove_login_btn"
+          onClick={handleLogin}
+          disabled={loading}
+          className="mt-4 w-full bg-[#FF6B35] text-white py-3 rounded-xl font-bold"
+        >
           {loading ? "Accesso..." : "Accedi"}
         </button>
       </div>
