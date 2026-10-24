@@ -1,108 +1,110 @@
-'use client'
-import { useState } from 'react'
-import { supabase } from '@/lib/supabase'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
+"use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { supabase } from "../../lib/supabase";
 
-export default function Accedi() {
-  const router = useRouter()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [conferma, setConferma] = useState('')
-  const [loading, setLoading] = useState(false)
+export default function AccediPage() {
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleLogin = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
+    setError("");
+    setLoading(true);
 
-    if (password !== conferma) {
-      alert('Le password non coincidono')
-      return
+    const cleanEmail = email.trim().toLowerCase();
+
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("email", cleanEmail)
+      .eq("password", password)
+      .single();
+
+    setLoading(false);
+
+    if (error || !data) {
+      setError("Email o password non corretti");
+      return;
     }
 
-    if (password.length < 3) {
-      alert('Password troppo corta')
-      return
-    }
-
-    setLoading(true)
-
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('email', email.toLowerCase().trim())
-        .eq('password', password)
-        .single()
-
-      if (error || !data) {
-        alert('Email o password errati')
-        setLoading(false)
-        return
-      }
-
-      localStorage.setItem('leashlove_user', JSON.stringify(data))
-      router.push('/mappa')
-    } catch (err) {
-      alert('Errore: ' + err.message)
-      setLoading(false)
-    }
-  }
+    localStorage.setItem("leashlove_user", JSON.stringify(data));
+    router.push("/mappa");
+  };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-[#faf8f5]">
-      <div className="w-full max-w-md bg-white p-8 rounded-[24px] shadow-sm border">
-        <h1 className="text-3xl font-black mb-2 text-center">Accedi - v10 NUOVA</h1>
-        <p className="text-sm text-gray-500 text-center mb-8">Bentornato su LeashLove</p>
+    <div className="min-h-screen bg-[#FFFBF5] flex flex-col px-6 pt-8">
+      <button onClick={() => router.push("/")} className="text-left text-[#2D6A4F] font-medium mb-6">
+        &lt; Indietro
+      </button>
 
-        <form onSubmit={handleLogin} className="flex flex-col gap-4">
-          <div>
-            <label className="text-sm font-bold ml-1">Email</label>
-            <input
-              type="email"
-              placeholder="es. mario@gmail.com"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="border-2 border-black/10 p-4 rounded-xl w-full bg-white text-black outline-none focus:border-black mt-1"
-            />
-          </div>
+      <h1 className="text-3xl font-bold text-[#2D6A4F] mb-2">Accedi</h1>
+      <p className="text-gray-500 mb-8">Bentornato su LeashLove</p>
 
-          <div>
-            <label className="text-sm font-bold ml-1">Password</label>
-            <input
-              type="password"
-              placeholder="Password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="border-2 border-black/10 p-4 rounded-xl w-full bg-white text-black outline-none focus:border-black mt-1"
-            />
-          </div>
+      <form onSubmit={handleLogin} autoComplete="off" data-lpignore="true" data-form-type="other" className="flex flex-col gap-4">
+        
+        {/* CAMPI FIN TI PER FREGARE CHROME */}
+        <div aria-hidden="true" style={{ position: 'absolute', left: '-9999px', height: 0, overflow: 'hidden' }}>
+          <input type="text" name="prevent_autofill_username" autoComplete="username" tabIndex={-1} />
+          <input type="password" name="prevent_autofill_password" autoComplete="new-password" tabIndex={-1} />
+        </div>
 
-          <div>
-            <label className="text-sm font-bold ml-1">Conferma Password</label>
-            <input
-              type="password"
-              placeholder="Ripeti password"
-              required
-              value={conferma}
-              onChange={(e) => setConferma(e.target.value)}
-              className="border-2 border-black/10 p-4 rounded-xl w-full bg-white text-black outline-none focus:border-black mt-1"
-            />
-          </div>
+        {/* EMAIL */}
+        <div>
+          <label className="text-sm text-[#2D6A4F] font-semibold">Email</label>
+          <input
+            type="text"
+            inputMode="email"
+            id="leashlove_login_field_e_xyz92"
+            name="leashlove_login_field_e_xyz92"
+            autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="off"
+            spellCheck={false}
+            data-lpignore="true"
+            data-1p-ignore="true"
+            data-bwignore="true"
+            readOnly
+            onFocus={(e) => e.currentTarget.removeAttribute("readonly")}
+            placeholder="es. mario.rossi@email.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="mt-2 w-full px-4 py-3 rounded-xl border border-orange-100 bg-white outline-none focus:border-[#FF6B35] placeholder:text-gray-400 placeholder:opacity-100"
+          />
+        </div>
 
-          <button
-            disabled={loading}
-            className="bg-black text-white p-4 rounded-full font-bold mt-4 disabled:opacity-50"
-          >
-            {loading ? 'Caricamento...' : 'Entra'}
-          </button>
-        </form>
+        {/* PASSWORD */}
+        <div>
+          <label className="text-sm text-[#2D6A4F] font-semibold">Password</label>
+          <input
+            type="password"
+            id="leashlove_login_field_p_xyz92"
+            name="leashlove_login_field_p_xyz92"
+            autoComplete="new-password"
+            data-lpignore="true"
+            data-1p-ignore="true"
+            readOnly
+            onFocus={(e) => e.currentTarget.removeAttribute("readonly")}
+            placeholder="La tua password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="mt-2 w-full px-4 py-3 rounded-xl border border-orange-100 bg-white outline-none focus:border-[#FF6B35] placeholder:text-gray-400"
+          />
+        </div>
 
-        <p className="text-center text-sm mt-6">
-          Non hai un account? <Link href="/iscrizione" className="font-bold underline">Iscriviti</Link>
-        </p>
-      </div>
+        {error && <p className="text-red-500 text-sm">{error}</p>}
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="mt-4 w-full bg-[#FF6B35] text-white py-3 rounded-xl font-bold disabled:opacity-50"
+        >
+          {loading ? "Accesso..." : "Accedi"}
+        </button>
+      </form>
     </div>
-  )
+  );
 }
